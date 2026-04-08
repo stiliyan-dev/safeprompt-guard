@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SafePrompt Guard Detector Harness</title>
+  </head>
+  <body>
+    <pre id="results">running...</pre>
+    <script src="./learned-secrets-store.js"></script>
+    <script src="./password-sources.js"></script>
+    <script src="./detector.js"></script>
+    <script>
+      (function runHarness() {
+        const output = document.getElementById("results");
+        function customCase(name, input, expected) {
+          const findings = SafePromptDetector.detectSensitiveData(input);
+          const actionable = SafePromptDetector.getActionableFindings(findings);
+          const types = actionable.map((finding) => finding.type);
+          const replaceResult = SafePromptDetector.replaceSensitiveText(input, findings);
+          const maskResult = SafePromptDetector.maskSensitiveText(input, findings);
+          const highestSeverity = SafePromptDetector.getHighestSeverity(findings);
+          const passed =
+            (!expected.highestSeverity || highestSeverity === expected.highestSeverity) &&
+            (!Number.isInteger(expected.minActionable) || actionable.length >= expected.minActionable) &&
+            (!expected.types || expected.types.every((type) => types.includes(type))) &&
+            (!expected.replaceIncludes || expected.replaceIncludes.every((value) => replaceResult.includes(value))) &&
+            (!expected.maskIncludes || expected.maskIncludes.every((value) => maskResult.includes(value)));
+
+          return {
+            name,
+            passed,
+            highestSeverity,
+            actionableCount: actionable.length,
+            types,
+            replaceResult,
+            maskResult
+          };
+        }
+
+        function storeCase(name, run) {
+          try {
+            return {
+              name,
+              passed: Boolean(run()),
+            };
+          } catch (error) {
+            return {
+              name,
+              passed: false,
+              error: String(error && error.message ? error.message : error)
+            };
+          }
+        }
+
+        const builtIn = SafePromptDetector.runSelfTests({ silent: true });
+        const custom = [
+          customCase(
+            "static-common-password-no-special-char",
+            "Please rotate Password123 after cutover.",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 1,
+              types: ["Password"],
+              replaceIncludes: ["[PASSWORD_REDACTED]"]
+            }
+          ),
+          customCase(
+            "static-default-credential-pair",
+            "Username: admin\nPassword: admin",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 2,
+              types: ["Account name", "Password"],
+              replaceIncludes: ["Username: [ACCOUNT_NAME]", "Password: [PASSWORD_REDACTED]"]
+            }
+          ),
+          customCase(
+            "labeled-password-no-special-char",
+            "Password: DemoAccess2026",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 1,
+              types: ["Password"],
+              replaceIncludes: ["[PASSWORD_REDACTED]"],
+              maskIncludes: ["********"]
+            }
+          ),
+          customCase(
+            "demo-email-full",
+            "Customer: Demo Corporation\nProject: DemoSales\nEnvironment: demo-sales-prod\nUsername: demo_admin\nPassword: DemoAccess2026\nhttps://demo-sales.company-demo.local\nPrimary Host: demo-app01.company-demo.local\nDatabase Host: demo-db01.company-demo.local\n10.10.10.11\n10.10.10.12",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 10,
+              types: [
+                "Customer name",
+                "Project name",
+                "Environment name",
+                "Account name",
+                "Password",
+                "Internal URL",
+                "Internal host",
+                "Internal IP address"
+              ],
+              replaceIncludes: [
+                "[CUSTOMER_NAME]",
+                "[PROJECT_NAME]",
+                "[ENVIRONMENT_NAME]",
+                "[ACCOUNT_NAME]",
+                "[PASSWORD_REDACTED]",
+                "[INTERNAL_URL]",
+                "[INTERNAL_HOST]",
+                "[INTERNAL_IP_REDACTED]"
+              ]
+            }
+          ),
+          customCase(
+            "db-password-assignment-no-special-char",
+            "DB_PASSWORD=OrionSecure2026",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 1,
+              types: ["Password"],
+              replaceIncludes: ["DB_PASSWORD=[PASSWORD_REDACTED]"]
+            }
+          ),
+          customCase(
+            "connection-string-labeled-password",
+            "Server=172.20.6.45;Database=nova;User Id=admin;Password=NovaSecurePass2026;",
+            {
+              highestSeverity: "HIGH",
+              minActionable: 4,
+              types: ["Internal IP address", "Resource identifier", "Account name", "Password"],
+              replaceIncludes: ["Password=[PASSWORD_REDACTED]"]
+            }
+          ),
+          customCase(
+            "customer-specific-low-noise",
+            "Customer: Demo Corporation\nProject: DemoSales\nPort: 1433\nVersion: 4.7.2",
+            {
+              highestSeverity: "MEDIUM",
+              minActionable: 2,
+              types: ["Customer name", "Project name"]
+            }
+          ),
+          customCase(
+            "learned-password-manual-exact",
+            (() => {
+              SafePromptDetector.setLearnedSecrets([{ id: "hp1", value: "ManualVaultPass2026", type: "password" }]);
+              return "ManualVaultPass2026";
+            })(),
+            {
+              highestSeverity: "HIGH",
+              minActionable: 1,
+              types: ["Password"],
+              maskIncludes: ["********"]
+            }
+          )
+        ];
+
+        SafePromptDetector.setLearnedSecrets([]);
+
+        const storeTests = [
+          storeCase("store-upsert-add", () => {
+            const result = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            return result.added === true && result.updated === false && result.entries.length === 1 && result.entries[0].type === "password";
+          }),
+          storeCase("store-upsert-update-duplicate", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const second = SafePromptLearnedStore.upsertEntry(first.entries, { value: "ManualPass2026", type: "secret" });
+            return second.added === false && second.updated === true && second.entries.length === 1 && second.entries[0].type === "secret";
+          }),
+          storeCase("store-remove", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const removed = SafePromptLearnedStore.removeEntry(first.entries, first.entry.id);
+            return removed.removed === true && removed.entries.length === 0;
+          }),
+          storeCase("store-clear", () => SafePromptLearnedStore.clearEntries().length === 0),
+          storeCase("store-delete-stops-detection", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            SafePromptDetector.setLearnedSecrets(first.entries);
+            const before = SafePromptDetector.getActionableFindings(SafePromptDetector.detectSensitiveData("ManualPass2026")).length;
+            const removed = SafePromptLearnedStore.removeEntry(first.entries, first.entry.id);
+            SafePromptDetector.setLearnedSecrets(removed.entries);
+            const after = SafePromptDetector.getActionableFindings(SafePromptDetector.detectSensitiveData("ManualPass2026")).length;
+            SafePromptDetector.setLearnedSecrets([]);
+            return before === 1 && after === 0;
+          }),
+          storeCase("store-clear-stops-detection", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            SafePromptDetector.setLearnedSecrets(first.entries);
+            const before = SafePromptDetector.getActionableFindings(SafePromptDetector.detectSensitiveData("ManualPass2026")).length;
+            SafePromptDetector.setLearnedSecrets(SafePromptLearnedStore.clearEntries());
+            const after = SafePromptDetector.getActionableFindings(SafePromptDetector.detectSensitiveData("ManualPass2026")).length;
+            SafePromptDetector.setLearnedSecrets([]);
+            return before === 1 && after === 0;
+          }),
+          storeCase("store-update-entry", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const updated = SafePromptLearnedStore.updateEntry(first.entries, {
+              id: first.entry.id,
+              value: "ManualToken2026",
+              type: "token"
+            });
+            return updated.updated === true && updated.entries.length === 1 && updated.entries[0].value === "ManualToken2026" && updated.entries[0].type === "token";
+          }),
+          storeCase("store-remove-many", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const second = SafePromptLearnedStore.upsertEntry(first.entries, { value: "ManualToken2026", type: "token" });
+            const removed = SafePromptLearnedStore.removeEntries(second.entries, [first.entry.id, second.entry.id]);
+            return removed.removedCount === 2 && removed.entries.length === 0;
+          }),
+          storeCase("store-import-merge", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const imported = SafePromptLearnedStore.importEntries(
+              first.entries,
+              [
+                { value: "ManualPass2026", type: "secret" },
+                { value: "DemoToken2026", type: "token" }
+              ],
+              { mode: "merge" }
+            );
+            return imported.added === 1 && imported.updated === 1 && imported.entries.length === 2;
+          }),
+          storeCase("store-import-replace", () => {
+            const first = SafePromptLearnedStore.upsertEntry([], { value: "ManualPass2026", type: "password" });
+            const imported = SafePromptLearnedStore.importEntries(
+              first.entries,
+              [{ value: "Replacement2026", type: "secret" }],
+              { mode: "replace" }
+            );
+            return imported.mode === "replace" && imported.entries.length === 1 && imported.entries[0].value === "Replacement2026";
+          })
+        ];
+
+        const summary = {
+          builtInPassed: builtIn.filter((item) => item.passed).length,
+          builtInTotal: builtIn.length,
+          customPassed: custom.filter((item) => item.passed).length,
+          customTotal: custom.length,
+          storePassed: storeTests.filter((item) => item.passed).length,
+          storeTotal: storeTests.length,
+          failedBuiltIn: builtIn.filter((item) => !item.passed),
+          failedCustom: custom.filter((item) => !item.passed),
+          failedStore: storeTests.filter((item) => !item.passed)
+        };
+
+        output.textContent = JSON.stringify({ summary, builtIn, custom, storeTests }, null, 2);
+      })();
+    </script>
+  </body>
+</html>

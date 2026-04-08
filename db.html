@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+  What this file does:
+  Renders the full interactive Local DB admin page for learned values.
+
+  Why it exists:
+  The popup stays compact, while this page provides searchable, editable, import/export-capable management for local learned items.
+
+  How to extend it:
+  Add audit history, tag columns, sync options, or richer rule metadata if the Local DB grows beyond this POC.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SafePrompt Guard Local DB</title>
+    <link rel="stylesheet" href="db.css" />
+  </head>
+  <body>
+    <div class="dbShell">
+      <header class="hero">
+        <div class="hero__brand">
+          <img class="hero__mark" src="assets/brand/icon-mark.svg" alt="" />
+          <div>
+            <div class="hero__eyebrow">SafePrompt Guard</div>
+            <h1>Local DB Console</h1>
+            <p>Manage exact-match learned values stored only on this device.</p>
+          </div>
+        </div>
+        <div class="hero__stats">
+          <div class="statCard">
+            <div class="statCard__label">Saved items</div>
+            <div id="count" class="statCard__value">0</div>
+          </div>
+          <div class="statCard">
+            <div class="statCard__label">Filtered view</div>
+            <div id="resultCount" class="statCard__value">0</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="consoleCard">
+          <div class="toolbar">
+            <div class="toolbar__actions">
+              <button id="addRow" class="button button--primary" type="button">Add</button>
+              <button id="importRows" class="button button--secondary" type="button">Import</button>
+              <button id="exportJson" class="button button--ghost" type="button">Export JSON</button>
+              <button id="exportCsv" class="button button--ghost" type="button">Export CSV</button>
+              <button id="deleteSelected" class="button button--danger" type="button">Delete selected</button>
+            </div>
+
+            <div class="toolbar__filters">
+              <label class="field field--search">
+                <span>Search</span>
+                <input id="searchInput" type="search" placeholder="Search value or type" />
+              </label>
+
+              <label class="field">
+                <span>Type</span>
+                <select id="typeFilter">
+                  <option value="all">All types</option>
+                  <option value="password">Password</option>
+                  <option value="token">Token</option>
+                  <option value="api_key">API key</option>
+                  <option value="secret">Secret</option>
+                  <option value="internal_reference">Internal reference</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Sort</span>
+                <select id="sortOrder">
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="type">Type</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="toolbar__meta">
+              <span id="selectionSummary">0 selected</span>
+              <span id="statusSummary">Ready</span>
+            </div>
+          </div>
+
+          <div class="tableWrap">
+            <table class="dbTable">
+              <thead>
+                <tr>
+                  <th class="dbTable__checkbox">
+                    <input id="selectAll" type="checkbox" aria-label="Select all rows" />
+                  </th>
+                  <th>Type</th>
+                  <th>Raw value</th>
+                  <th>Created</th>
+                  <th>Updated</th>
+                  <th class="dbTable__actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+            <div id="emptyState" class="emptyState" hidden>
+              <div class="emptyState__icon">SG</div>
+              <h2>No learned values yet</h2>
+              <p>Add your first password, token, or internal reference to seed the local detector.</p>
+              <button id="emptyAdd" class="button button--primary" type="button">Add first item</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="overlay" class="overlay" hidden></div>
+
+    <aside id="drawer" class="drawer" hidden>
+      <div class="drawer__header">
+        <div>
+          <div id="drawerEyebrow" class="drawer__eyebrow">Add</div>
+          <h2 id="drawerTitle">Add learned value</h2>
+          <p id="drawerHint">Save exact-match values that should be detected later.</p>
+        </div>
+        <button id="drawerClose" class="iconButton" type="button" aria-label="Close panel">×</button>
+      </div>
+
+      <section id="editorSection" class="drawerSection" hidden>
+        <label class="field">
+          <span>Type</span>
+          <select id="editorType">
+            <option value="password">Password</option>
+            <option value="token">Token</option>
+            <option value="api_key">API key</option>
+            <option value="secret">Secret</option>
+            <option value="internal_reference">Internal reference</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Raw value</span>
+          <textarea id="editorValue" rows="8" placeholder="Type or paste the exact value"></textarea>
+        </label>
+
+        <div class="drawer__actions">
+          <button id="editorCancel" class="button button--ghost" type="button">Cancel</button>
+          <button id="editorSave" class="button button--primary" type="button">Save</button>
+        </div>
+      </section>
+
+      <section id="importSection" class="drawerSection" hidden>
+        <label class="field">
+          <span>Import file</span>
+          <input id="importFile" type="file" accept=".json,.csv,application/json,text/csv" />
+        </label>
+
+        <fieldset class="modeGroup">
+          <legend>Import mode</legend>
+          <label class="modeOption">
+            <input type="radio" name="importMode" value="merge" checked />
+            <span>Merge / upsert exact values</span>
+          </label>
+          <label class="modeOption">
+            <input type="radio" name="importMode" value="replace" />
+            <span>Replace all</span>
+          </label>
+        </fieldset>
+
+        <section id="importPreview" class="importPreview">
+          <div class="importPreview__title">Preview</div>
+          <div id="importPreviewBody" class="importPreview__body">Choose a JSON or CSV file to preview the import.</div>
+        </section>
+
+        <div class="drawer__actions">
+          <button id="importCancel" class="button button--ghost" type="button">Cancel</button>
+          <button id="importApply" class="button button--primary" type="button">Import</button>
+        </div>
+      </section>
+    </aside>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <script src="learned-secrets-store.js"></script>
+    <script src="db.js"></script>
+  </body>
+</html>

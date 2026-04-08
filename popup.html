@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+  What this file does:
+  Renders the extension popup for enablement, latest warning summary, and local learned-secret DB management.
+
+  Why it exists:
+  The popup gives a quick local status check and a small control surface for reviewing saved learned items.
+
+  How to extend it:
+  Add per-rule toggles, export/import, or editable org rules if the POC grows.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SafePrompt Guard</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popupShell">
+      <header class="heroCard">
+        <div class="heroCard__brand">
+          <img class="heroCard__mark" src="assets/brand/icon-mark.svg" alt="" />
+          <div>
+            <h1>SafePrompt Guard</h1>
+            <p>Local prompt security for AI workflows.</p>
+          </div>
+        </div>
+        <div id="buildMeta" class="meta"></div>
+        <div id="pageStatusNote" class="pageStatusNote" hidden></div>
+      </header>
+
+      <section class="statusGrid">
+        <article class="card card--toggle">
+          <div class="card__eyebrow">Protection</div>
+          <div class="card__title">Enable scanning</div>
+          <label class="switch" aria-label="Enable scanning">
+            <input id="enabled" type="checkbox" />
+            <span class="switch__track"></span>
+          </label>
+        </article>
+
+        <article class="card">
+          <div class="card__eyebrow">Total detections</div>
+          <div id="totalDetections" class="metricValue">0</div>
+        </article>
+      </section>
+
+      <section class="card">
+        <div class="sectionHeader">
+          <div>
+            <div class="card__eyebrow">Last warning</div>
+            <div class="sectionTitle">Latest page finding</div>
+          </div>
+        </div>
+        <div id="lastDetection" class="value">No risky prompt detected yet.</div>
+      </section>
+
+      <section class="card">
+        <div class="dbHeader">
+          <div>
+            <div class="card__eyebrow">Local DB</div>
+            <div class="sectionTitle">Manual learned values</div>
+            <div id="learnedCount" class="value value--compact">0 saved items</div>
+          </div>
+          <div class="dbActions">
+            <button id="addLearnedManual" class="actionButton actionButton--cyan" type="button">Add manually</button>
+            <button id="openLearnedDb" class="actionButton actionButton--ghost" type="button">Open DB</button>
+            <button id="clearLearned" class="actionButton actionButton--danger" type="button">Clear all</button>
+          </div>
+        </div>
+
+        <div id="manualLearnedForm" class="manualForm" hidden>
+          <div class="manualFormLabel">Add a learned value from selection or by typing/pasting it here.</div>
+          <textarea id="manualLearnedValue" class="manualFormInput" rows="3" placeholder="Type or paste a value"></textarea>
+          <select id="manualLearnedType" class="manualFormSelect">
+            <option value="password">Password</option>
+            <option value="token">Token</option>
+            <option value="api_key">API key</option>
+            <option value="secret">Secret</option>
+            <option value="internal_reference">Internal ref</option>
+          </select>
+          <div class="manualFormActions">
+            <button id="manualUseSelected" class="actionButton actionButton--ghost" type="button">Use selected</button>
+            <button id="manualCancel" class="actionButton actionButton--ghost" type="button">Cancel</button>
+            <button id="manualSave" class="actionButton actionButton--cyan" type="button">Add</button>
+          </div>
+          <div id="manualFormStatus" class="manualFormStatus"></div>
+        </div>
+
+        <div id="learnedList" class="learnedList"></div>
+      </section>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

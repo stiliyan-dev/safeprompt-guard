@@ -1,0 +1,7 @@
+<svg width="760" height="120" viewBox="0 0 760 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="760" height="120" rx="28" fill="#07111F" />
+  <text x="32" y="50" fill="#EEF4FF" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="-1.4">SafePrompt Guard</text>
+  <text x="32" y="84" fill="#96A8C8" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="500">Detect sensitive prompt content before it leaves the browser.</text>
+  <rect x="584" y="30" width="140" height="56" rx="28" fill="#123149" />
+  <text x="612" y="66" fill="#4DC6FF" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">LOCAL DB</text>
+</svg>

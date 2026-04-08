@@ -1,0 +1,482 @@
+:root {
+  --bg: #061120;
+  --bg-soft: #0a1730;
+  --panel: rgba(10, 23, 48, 0.9);
+  --panel-strong: rgba(15, 31, 61, 0.96);
+  --line: rgba(67, 123, 186, 0.34);
+  --line-strong: rgba(92, 184, 248, 0.58);
+  --text: #eff5ff;
+  --muted: #9cb1d2;
+  --cyan: #40bdf8;
+  --cyan-strong: #0782cf;
+  --amber: #f0ab2a;
+  --red: #dc4b4b;
+  --shadow: 0 28px 90px rgba(2, 8, 23, 0.46);
+  --font-display: "Aptos Display", "Segoe UI Variable Display", "Segoe UI", sans-serif;
+  --font-body: "Aptos", "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(64, 189, 248, 0.16), transparent 34%),
+    radial-gradient(circle at top left, rgba(240, 171, 42, 0.1), transparent 26%),
+    linear-gradient(180deg, #071223 0%, #08172d 42%, #061120 100%);
+  color: var(--text);
+  font-family: var(--font-body);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.pageGlow,
+.pageGrid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pageGlow {
+  background:
+    radial-gradient(circle at 20% 16%, rgba(64, 189, 248, 0.14), transparent 24%),
+    radial-gradient(circle at 78% 10%, rgba(240, 171, 42, 0.1), transparent 18%);
+}
+
+.pageGrid {
+  opacity: 0.22;
+  background-image:
+    linear-gradient(to right, rgba(156, 177, 210, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(156, 177, 210, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.topbar,
+.siteShell,
+.policyShell,
+.siteFooter {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  width: min(1180px, calc(100% - 32px));
+  margin: 18px auto 0;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: rgba(7, 17, 32, 0.7);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+
+.brandLockup img {
+  width: clamp(180px, 24vw, 248px);
+}
+
+.topnav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.topnav a {
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+
+.topnav a:hover {
+  color: var(--text);
+}
+
+.siteShell,
+.policyShell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 32px auto 48px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+  gap: 26px;
+  align-items: stretch;
+}
+
+.heroCopy,
+.heroPanel,
+.featureCard,
+.workflowCard,
+.shotCard,
+.sectionBlock,
+.policyHero,
+.policyCard {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+
+.heroCopy {
+  padding: 40px;
+}
+
+.eyebrow,
+.heroMetaLabel,
+.workflowStep,
+.policyHero p {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+  font-size: 0.78rem;
+}
+
+.heroCopy h1,
+.sectionHeader h2,
+.policyHero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.02;
+  margin: 12px 0 0;
+}
+
+.heroCopy h1 {
+  font-size: clamp(2.6rem, 5vw, 4.7rem);
+  max-width: 12ch;
+}
+
+.heroLead,
+.featureCard p,
+.workflowCard p,
+.policyCard p,
+.policyCard li,
+.shotCard figcaption {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.heroLead {
+  max-width: 58ch;
+  margin-top: 18px;
+  font-size: 1.08rem;
+}
+
+.heroActions,
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #34b7f2, #0f95de);
+  color: #04111d;
+}
+
+.button--secondary {
+  background: linear-gradient(135deg, #f4b13d, #dd8f08);
+  color: #1c1405;
+}
+
+.button--ghost {
+  border-color: var(--line-strong);
+  color: var(--text);
+  background: rgba(8, 20, 38, 0.42);
+}
+
+.heroMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.heroMetaCard {
+  padding: 16px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(67, 123, 186, 0.22);
+  background: rgba(8, 20, 38, 0.38);
+}
+
+.heroMetaCard strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.98rem;
+}
+
+.heroPanel {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.heroPanel__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(64, 189, 248, 0.12);
+  border: 1px solid rgba(64, 189, 248, 0.4);
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.heroChecklist {
+  margin: 18px 0 0;
+  padding-left: 18px;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.heroChecklist li + li {
+  margin-top: 8px;
+}
+
+.heroPanel__footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(67, 123, 186, 0.24);
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.featureStrip,
+.workflowGrid,
+.shotGrid {
+  display: grid;
+  gap: 18px;
+}
+
+.featureStrip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 26px;
+}
+
+.featureCard {
+  padding: 24px;
+}
+
+.featureCard h2,
+.workflowCard h3,
+.policyCard h2 {
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.featureCard p,
+.workflowCard p {
+  margin: 12px 0 0;
+}
+
+.sectionBlock {
+  margin-top: 26px;
+  padding: 28px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.sectionHeader h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+  max-width: 14ch;
+}
+
+.textLink {
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.workflowGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.workflowCard {
+  padding: 24px;
+}
+
+.workflowStep {
+  display: inline-flex;
+  margin-bottom: 14px;
+}
+
+.shotGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.shotCard {
+  overflow: hidden;
+}
+
+.shotCard--wide {
+  grid-column: 1 / -1;
+}
+
+.shotCard img {
+  width: 100%;
+  border-bottom: 1px solid rgba(67, 123, 186, 0.18);
+}
+
+.shotCard figcaption {
+  margin: 0;
+  padding: 18px 20px 22px;
+}
+
+.sectionBlock--cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) auto;
+  align-items: center;
+  gap: 20px;
+}
+
+.sectionBlock--cta p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+code {
+  font-family: Consolas, "SFMono-Regular", monospace;
+  color: #d9ecff;
+  background: rgba(6, 17, 32, 0.66);
+  border: 1px solid rgba(67, 123, 186, 0.22);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.policyHero {
+  padding: 30px 32px;
+}
+
+.policyHero h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+
+.policyShell {
+  max-width: 940px;
+}
+
+.policyCard {
+  margin-top: 18px;
+  padding: 26px 30px;
+}
+
+.policyList {
+  margin: 14px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.siteFooter {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 30px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(7, 17, 32, 0.72);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: var(--muted);
+}
+
+.siteFooter__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+@media (max-width: 1040px) {
+  .hero,
+  .sectionBlock--cta,
+  .featureStrip,
+  .workflowGrid,
+  .shotGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .shotCard--wide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar,
+  .siteFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topnav,
+  .siteFooter__links {
+    justify-content: flex-start;
+  }
+
+  .heroCopy,
+  .heroPanel,
+  .featureCard,
+  .workflowCard,
+  .sectionBlock,
+  .policyHero,
+  .policyCard {
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .heroCopy h1,
+  .sectionHeader h2,
+  .policyHero h1 {
+    max-width: none;
+  }
+}

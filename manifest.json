@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "SafePrompt Guard",
+  "version": "1.0.0",
+  "description": "Detect sensitive content before it is sent to AI tools.",
+  "icons": {
+    "16": "assets/brand/icons/icon-16.png",
+    "32": "assets/brand/icons/icon-32.png",
+    "48": "assets/brand/icons/icon-48.png",
+    "128": "assets/brand/icons/icon-128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://perplexity.ai/*",
+    "https://www.perplexity.ai/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "SafePrompt Guard",
+    "default_icon": {
+      "16": "assets/brand/icons/icon-16.png",
+      "32": "assets/brand/icons/icon-32.png",
+      "48": "assets/brand/icons/icon-48.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://perplexity.ai/*",
+        "https://www.perplexity.ai/*"
+      ],
+      "js": [
+        "password-sources.js",
+        "detector.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "styles.css",
+        "org_rules.json"
+      ],
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://perplexity.ai/*",
+        "https://www.perplexity.ai/*"
+      ]
+    }
+  ]
+}

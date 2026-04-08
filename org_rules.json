@@ -1,0 +1,37 @@
+{
+  "customerNames": ["Alpha", "Beta", "Gamma"],
+  "projectNames": ["ProjectRed", "Orion", "Falcon"],
+  "internalCodeNames": ["DeltaOps"],
+  "productNames": ["ProductThree", "Attivio", "ProductOne"],
+  "internalOnlyPhrases": [
+    "internal migration manual",
+    "customer files",
+    "private environment"
+  ],
+  "allowlistedTerms": [
+    "port",
+    "sql",
+    "docker",
+    "server",
+    "vm",
+    "cluster",
+    "coll-dock",
+    "environment",
+    "database"
+  ],
+  "riskyContextWords": [
+    "password",
+    "token",
+    "secret",
+    "key",
+    "credential",
+    "internal",
+    "confidential",
+    "customer",
+    "prod",
+    "tenant",
+    "migration",
+    "attachment",
+    "document"
+  ]
+}

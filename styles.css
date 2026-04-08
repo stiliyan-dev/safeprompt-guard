@@ -1,0 +1,346 @@
+/*
+  What this file does:
+  Styles the compact page warning, notices, and manual local-DB controls shown near the composer.
+
+  Why it exists:
+  The page UI should stay compact, readable, and outside the main typed content area.
+
+  How to extend it:
+  Add host-specific themes, smarter placement styles, or richer local-DB management visuals if needed.
+*/
+
+#safe-prompt-guard-warning.spg-warning {
+  position: fixed;
+  z-index: 2147483646;
+  width: min(94vw, 452px);
+  padding: 14px;
+  border: 1px solid rgba(84, 195, 255, 0.24);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(77, 198, 255, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(10, 21, 39, 0.98), rgba(7, 15, 28, 0.98));
+  color: #f8fafc;
+  box-shadow: 0 22px 48px rgba(2, 8, 18, 0.42);
+  backdrop-filter: blur(16px);
+  font-family: "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", Arial, sans-serif;
+}
+
+#safe-prompt-guard-notice.spg-notice {
+  position: fixed;
+  z-index: 2147483646;
+  width: min(84vw, 260px);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(10, 21, 39, 0.98);
+  color: #e2e8f0;
+  box-shadow: 0 16px 32px rgba(2, 8, 18, 0.34);
+  font-family: "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", Arial, sans-serif;
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+#safe-prompt-guard-selection.spg-selection {
+  position: fixed;
+  z-index: 2147483646;
+  width: min(82vw, 252px);
+  padding: 10px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 12px;
+  background: rgba(10, 21, 39, 0.98);
+  color: #e2e8f0;
+  box-shadow: 0 16px 32px rgba(2, 8, 18, 0.32);
+  font-family: "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", Arial, sans-serif;
+}
+
+#safe-prompt-guard-debug-badge.spg-debug-badge {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2147483647;
+  padding: 8px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.9);
+  color: #dbeafe;
+  font: 11px/1.45 Consolas, "Courier New", monospace;
+  white-space: pre-line;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.26);
+  pointer-events: none;
+}
+
+.spg-notice--info {
+  border: 1px solid rgba(56, 189, 248, 0.45);
+}
+
+.spg-notice--success {
+  border: 1px solid rgba(74, 222, 128, 0.45);
+}
+
+.spg-notice--warning {
+  border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.spg-notice--error {
+  border: 1px solid rgba(248, 113, 113, 0.45);
+}
+
+.spg-notice__text {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.spg-notice__dismiss {
+  border: 0;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0;
+  min-width: 16px;
+}
+
+.spg-warning__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: move;
+  user-select: none;
+}
+
+.spg-warning__title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.spg-warning__hint {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.spg-warning__summary {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ffd1c7;
+  line-height: 1.4;
+}
+
+.spg-warning__details {
+  margin-top: 8px;
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.75) rgba(15, 23, 42, 0.3);
+}
+
+.spg-warning__details::-webkit-scrollbar {
+  width: 8px;
+}
+
+.spg-warning__details::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: 999px;
+}
+
+.spg-warning__details::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.75);
+  border-radius: 999px;
+}
+
+.spg-warning__item {
+  display: block;
+  width: 100%;
+  border: 1px solid rgba(84, 112, 151, 0.44);
+  border-radius: 12px;
+  background: rgba(8, 18, 34, 0.78);
+  color: #f8fafc;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.spg-warning__item.is-active {
+  border-color: rgba(77, 198, 255, 0.72);
+  background: rgba(77, 198, 255, 0.12);
+}
+
+.spg-warning__itemTitle {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.spg-warning__itemMeta {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #9fdcff;
+}
+
+.spg-warning__itemControls {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spg-miniButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(77, 198, 255, 0.18);
+  color: #bdeaff;
+  cursor: pointer;
+}
+
+.spg-miniButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.spg-warning__actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#safe-prompt-guard-warning .spg-warning__actions .spg-button {
+  min-width: 0;
+  width: 100%;
+  padding: 8px 8px;
+  font-size: 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.spg-manualEntry {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(77, 198, 255, 0.28);
+  border-radius: 14px;
+  background: rgba(6, 14, 27, 0.88);
+}
+
+.spg-manualEntry__title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.spg-manualEntry__hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.spg-manualEntry__input,
+.spg-manualEntry__select {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(71, 85, 105, 0.8);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.spg-manualEntry__input {
+  resize: vertical;
+  min-height: 68px;
+}
+
+.spg-manualEntry__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.spg-selection__title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.spg-selection__preview {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #93c5fd;
+  word-break: break-word;
+}
+
+.spg-selection__select {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(71, 85, 105, 0.8);
+  border-radius: 9px;
+  padding: 7px 9px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.spg-selection__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.spg-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.spg-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.spg-button--cancel {
+  background: #eef4ff;
+  color: #07111f;
+}
+
+.spg-button--cancel-learned,
+.spg-button--manual-cancel {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.spg-button--mask {
+  background: linear-gradient(180deg, #f3b649 0%, #e3981d 100%);
+  color: #2c1a00;
+}
+
+.spg-button--send {
+  background: linear-gradient(180deg, #ef4539 0%, #cf2f27 100%);
+  color: white;
+}
+
+.spg-button--manual,
+.spg-button--manual-open,
+.spg-button--manual-add,
+.spg-button--add-learned {
+  background: linear-gradient(180deg, #52c8ff 0%, #33b9f4 100%);
+  color: #0b3448;
+}
+
+.spg-button--manual-use-selected {
+  background: #eef4ff;
+  color: #07111f;
+}

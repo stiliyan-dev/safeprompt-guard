@@ -1,0 +1,530 @@
+/*
+  What this file does:
+  Styles the full Local DB management console, including the sticky toolbar, table, and right-side drawer.
+
+  Why it exists:
+  The Local DB is now a primary management surface, so it needs a desktop-grade layout instead of a simple read-only list.
+
+  How to extend it:
+  Add column groups, history panels, or multi-tab admin views here as the console grows.
+*/
+
+:root {
+  --db-bg: #06111e;
+  --db-bg-alt: #09192c;
+  --db-surface: rgba(10, 21, 39, 0.92);
+  --db-surface-strong: rgba(12, 25, 45, 0.98);
+  --db-surface-muted: rgba(6, 14, 27, 0.96);
+  --db-border: rgba(101, 128, 167, 0.24);
+  --db-border-strong: rgba(84, 195, 255, 0.34);
+  --db-text: #e8f1ff;
+  --db-text-muted: #93a6c8;
+  --db-text-soft: #bac7df;
+  --db-cyan: #4dc6ff;
+  --db-cyan-deep: #0b3448;
+  --db-amber: #f3aa34;
+  --db-red: #da3c33;
+  --db-green: #2bb673;
+  --db-white: #eef4ff;
+  --db-shadow: 0 26px 54px rgba(0, 0, 0, 0.28);
+  --db-font: "Segoe UI Variable", "Segoe UI", "IBM Plex Sans", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(77, 198, 255, 0.13), transparent 28%),
+    radial-gradient(circle at top right, rgba(243, 170, 52, 0.09), transparent 24%),
+    linear-gradient(180deg, #07111f 0%, #050b14 100%);
+  color: var(--db-text);
+  font-family: var(--db-font);
+}
+
+.dbShell {
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.hero {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--db-border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(9, 21, 39, 0.96), rgba(7, 15, 28, 0.96));
+  box-shadow: var(--db-shadow);
+}
+
+.hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.hero__mark {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+}
+
+.hero__eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--db-text-muted);
+}
+
+h1 {
+  margin: 6px 0 0;
+  font-size: 34px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+p {
+  margin: 10px 0 0;
+  max-width: 580px;
+  color: var(--db-text-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.hero__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 12px;
+  min-width: 320px;
+}
+
+.statCard {
+  border: 1px solid var(--db-border);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(12, 26, 46, 0.72);
+}
+
+.statCard__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--db-text-muted);
+}
+
+.statCard__value {
+  margin-top: 10px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.workspace {
+  margin-top: 18px;
+}
+
+.consoleCard {
+  border: 1px solid var(--db-border);
+  border-radius: 24px;
+  background: var(--db-surface);
+  box-shadow: var(--db-shadow);
+  overflow: hidden;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--db-border);
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.98), rgba(8, 17, 32, 0.94));
+  backdrop-filter: blur(18px);
+}
+
+.toolbar__actions,
+.toolbar__filters,
+.toolbar__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toolbar__meta {
+  color: var(--db-text-muted);
+  font-size: 12px;
+}
+
+.tableWrap {
+  position: relative;
+  min-height: 360px;
+}
+
+.dbTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dbTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--db-border);
+  background: rgba(10, 21, 39, 0.98);
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--db-text-muted);
+}
+
+.dbTable tbody td {
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(101, 128, 167, 0.14);
+  vertical-align: top;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dbTable tbody tr:hover {
+  background: rgba(77, 198, 255, 0.04);
+}
+
+.dbTable__checkbox,
+.dbTable__actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.valueCell {
+  font-family: Consolas, "Courier New", monospace;
+  word-break: break-word;
+  color: var(--db-white);
+}
+
+.tableActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.typePill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(77, 198, 255, 0.14);
+  color: #b1e7ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(7, 15, 28, 0.9), rgba(5, 12, 22, 0.96));
+}
+
+.emptyState__icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(77, 198, 255, 0.2), rgba(77, 198, 255, 0.08));
+  color: var(--db-cyan);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.emptyState h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+
+.emptyState p {
+  margin: 10px auto 18px;
+  max-width: 420px;
+}
+
+.button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font: 700 12px/1 var(--db-font);
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.button:hover:not(:disabled),
+.iconButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:disabled,
+.iconButton:disabled {
+  opacity: 0.56;
+  cursor: default;
+  transform: none;
+}
+
+.button--primary {
+  background: linear-gradient(180deg, #52c8ff 0%, #33b9f4 100%);
+  color: var(--db-cyan-deep);
+}
+
+.button--secondary {
+  background: linear-gradient(180deg, #f3b649 0%, #e3981d 100%);
+  color: #2c1a00;
+}
+
+.button--ghost {
+  background: #eef4ff;
+  color: #08111f;
+}
+
+.button--danger {
+  background: linear-gradient(180deg, #ef4539 0%, #cf2f27 100%);
+  color: #fff;
+}
+
+.inlineButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(77, 198, 255, 0.16);
+  color: #a9e4ff;
+  cursor: pointer;
+  font: 700 11px/1 var(--db-font);
+}
+
+.inlineButton--danger {
+  background: rgba(218, 60, 51, 0.18);
+  color: #ffb8b2;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 150px;
+  font-size: 12px;
+  color: var(--db-text-muted);
+}
+
+.field--search {
+  min-width: min(320px, 42vw);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid rgba(101, 128, 167, 0.34);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: var(--db-surface-muted);
+  color: var(--db-text);
+  font: 13px/1.45 var(--db-font);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 180px;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(3, 8, 16, 0.52);
+  backdrop-filter: blur(3px);
+}
+
+.drawer {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 11;
+  width: min(440px, calc(100vw - 36px));
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--db-border-strong);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(10, 21, 39, 0.98), rgba(7, 15, 28, 0.98));
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.38);
+}
+
+.drawer[hidden],
+.overlay[hidden],
+.toast[hidden],
+.drawerSection[hidden] {
+  display: none;
+}
+
+.drawer__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--db-border);
+}
+
+.drawer__eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--db-text-muted);
+}
+
+.drawer__header h2 {
+  margin: 6px 0 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+
+.drawer__header p {
+  margin-top: 8px;
+}
+
+.drawerSection {
+  overflow: auto;
+  padding: 18px 20px 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.drawer__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(238, 244, 255, 0.1);
+  color: var(--db-white);
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.modeGroup {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--db-border);
+  border-radius: 16px;
+}
+
+.modeGroup legend {
+  padding: 0 6px;
+  color: var(--db-text-muted);
+  font-size: 12px;
+}
+
+.modeOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  color: var(--db-text-soft);
+}
+
+.importPreview {
+  padding: 16px;
+  border: 1px solid var(--db-border);
+  border-radius: 18px;
+  background: rgba(7, 15, 28, 0.88);
+}
+
+.importPreview__title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--db-text-muted);
+}
+
+.importPreview__body {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--db-text-soft);
+}
+
+.importPreview__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.importPreview__stat {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(12, 25, 45, 0.86);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 12;
+  transform: translateX(-50%);
+  min-width: 260px;
+  max-width: 520px;
+  padding: 12px 14px;
+  border: 1px solid var(--db-border-strong);
+  border-radius: 16px;
+  background: rgba(8, 18, 34, 0.98);
+  box-shadow: var(--db-shadow);
+  color: var(--db-white);
+  font-size: 13px;
+}
+
+.toast--success {
+  border-color: rgba(43, 182, 115, 0.42);
+}
+
+.toast--error {
+  border-color: rgba(218, 60, 51, 0.46);
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .hero__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+}

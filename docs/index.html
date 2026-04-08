@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafePrompt Guard</title>
+    <meta
+      name="description"
+      content="Local-first prompt security for AI workflows. Detect passwords, tokens, and internal-only values before they leave the browser."
+    />
+    <link rel="icon" href="assets/brand/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="pageGlow"></div>
+    <div class="pageGrid"></div>
+    <header class="topbar">
+      <a class="brandLockup" href="./index.html" aria-label="SafePrompt Guard home">
+        <img src="assets/brand/logo-lockup.svg" alt="SafePrompt Guard" />
+      </a>
+      <nav class="topnav">
+        <a href="#features">Features</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard/issues">Support</a>
+      </nav>
+    </header>
+
+    <main class="siteShell">
+      <section class="hero">
+        <div class="heroCopy">
+          <div class="eyebrow">Chrome extension | Local-first | Security-focused</div>
+          <h1>Catch risky prompt content before it is sent to AI tools.</h1>
+          <p class="heroLead">
+            SafePrompt Guard detects passwords, tokens, internal-only values, and curated
+            common/default credentials directly in the browser, then lets the user review or mask
+            them before send.
+          </p>
+          <div class="heroActions">
+            <a
+              class="button button--primary"
+              href="https://github.com/stiliyan-dev/safeprompt-guard/releases/latest/download/SafePrompt-Guard-1.0.0-extension-upload.zip"
+            >
+              Download v1.0.0
+            </a>
+            <a class="button button--secondary" href="./privacy-policy.html">Privacy Policy</a>
+            <a class="button button--ghost" href="https://github.com/stiliyan-dev/safeprompt-guard">
+              View Source
+            </a>
+          </div>
+          <div class="heroMeta">
+            <div class="heroMetaCard">
+              <span class="heroMetaLabel">Supported sites</span>
+              <strong>ChatGPT, Claude, Gemini, Perplexity</strong>
+            </div>
+            <div class="heroMetaCard">
+              <span class="heroMetaLabel">Data model</span>
+              <strong>Local processing with local-only learned DB</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="heroPanel__badge">What it blocks</div>
+          <ul class="heroChecklist">
+            <li>Passwords and labeled credentials</li>
+            <li>Tokens, API keys, secrets, and connection strings</li>
+            <li>Internal URLs, hosts, private IPs, and customer-specific references</li>
+            <li>Curated offline common/default passwords plus manual learned values</li>
+          </ul>
+          <div class="heroPanel__footer">
+            No backend. No account system. No external detection APIs in the default release.
+          </div>
+        </div>
+      </section>
+
+      <section class="featureStrip" id="features">
+        <article class="featureCard">
+          <h2>Inline warning flow</h2>
+          <p>
+            Review findings near the send area instead of switching into a large blocking modal.
+          </p>
+        </article>
+        <article class="featureCard">
+          <h2>Selective masking</h2>
+          <p>Mask only the selected finding or step through multiple findings one by one.</p>
+        </article>
+        <article class="featureCard">
+          <h2>Interactive Local DB</h2>
+          <p>
+            Add, edit, search, import, export, and manage learned values that should be caught on
+            future prompts.
+          </p>
+        </article>
+      </section>
+
+      <section class="sectionBlock">
+        <div class="sectionHeader">
+          <div>
+            <div class="eyebrow">Workflow</div>
+            <h2>Designed for technical teams who handle real operational data.</h2>
+          </div>
+        </div>
+        <div class="workflowGrid">
+          <article class="workflowCard">
+            <span class="workflowStep">01</span>
+            <h3>Scan before send</h3>
+            <p>
+              Prompt text is analyzed locally on supported AI sites, including structured
+              credentials and internal references.
+            </p>
+          </article>
+          <article class="workflowCard">
+            <span class="workflowStep">02</span>
+            <h3>Review findings</h3>
+            <p>
+              The inline warning summarizes actionable findings, lets the user highlight them, and
+              keeps the writing flow intact.
+            </p>
+          </article>
+          <article class="workflowCard">
+            <span class="workflowStep">03</span>
+            <h3>Mask or learn</h3>
+            <p>
+              Mask specific values immediately or add exact-match entries to the Local DB for
+              future detection.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="sectionBlock" id="screenshots">
+        <div class="sectionHeader">
+          <div>
+            <div class="eyebrow">Screenshots</div>
+            <h2>Current product views</h2>
+          </div>
+          <a
+            class="textLink"
+            href="https://github.com/stiliyan-dev/safeprompt-guard/releases/latest"
+          >
+            View all releases
+          </a>
+        </div>
+        <div class="shotGrid">
+          <figure class="shotCard shotCard--wide">
+            <img src="assets/screenshots/warning.png" alt="Inline warning near the prompt send area" />
+            <figcaption>Compact inline warning for risky content before send.</figcaption>
+          </figure>
+          <figure class="shotCard">
+            <img src="assets/screenshots/local-db-console.png" alt="Local DB console view" />
+            <figcaption>Interactive Local DB console with edit, search, and bulk actions.</figcaption>
+          </figure>
+          <figure class="shotCard">
+            <img src="assets/screenshots/import-export.png" alt="Import and export console view" />
+            <figcaption>JSON and CSV import/export for learned value management.</figcaption>
+          </figure>
+          <figure class="shotCard">
+            <img src="assets/screenshots/local-first.png" alt="Local-first product view" />
+            <figcaption>Local-first review flow designed for operational and support prompts.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="sectionBlock sectionBlock--cta">
+        <div>
+          <div class="eyebrow">Publish-ready URLs</div>
+          <h2>Use this site for the Chrome Web Store homepage and privacy policy.</h2>
+          <p>
+            Homepage URL:
+            <code>https://stiliyan-dev.github.io/safeprompt-guard/</code>
+          </p>
+          <p>
+            Privacy policy URL:
+            <code>https://stiliyan-dev.github.io/safeprompt-guard/privacy-policy.html</code>
+          </p>
+        </div>
+        <div class="ctaActions">
+          <a class="button button--primary" href="./privacy-policy.html">Open Privacy Policy</a>
+          <a class="button button--secondary" href="https://github.com/stiliyan-dev/safeprompt-guard/issues">
+            Open Support Issues
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="siteFooter">
+      <div>SafePrompt Guard</div>
+      <div class="siteFooter__links">
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard/issues">Support</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>

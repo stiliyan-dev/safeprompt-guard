@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SafePrompt Guard Privacy Policy</title>
+    <meta
+      name="description"
+      content="Privacy policy for SafePrompt Guard, a local-first Chrome extension for prompt security."
+    />
+    <link rel="icon" href="assets/brand/icon-128.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="pageGlow"></div>
+    <div class="pageGrid"></div>
+    <header class="topbar">
+      <a class="brandLockup" href="./index.html" aria-label="SafePrompt Guard home">
+        <img src="assets/brand/logo-lockup.svg" alt="SafePrompt Guard" />
+      </a>
+      <nav class="topnav">
+        <a href="./index.html">Home</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard/releases/latest">Download</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard/issues">Support</a>
+      </nav>
+    </header>
+
+    <main class="policyShell">
+      <section class="policyHero">
+        <div class="eyebrow">Privacy Policy</div>
+        <h1>SafePrompt Guard Privacy Policy</h1>
+        <p>Last updated: April 8, 2026</p>
+      </section>
+
+      <section class="policyCard">
+        <h2>Overview</h2>
+        <p>
+          SafePrompt Guard is a local-first Chrome extension that helps users detect sensitive
+          prompt content before it is sent to supported AI tools. The extension is designed to run
+          in the browser without a backend service or account system.
+        </p>
+      </section>
+
+      <section class="policyCard">
+        <h2>What the extension processes</h2>
+        <p>
+          On supported sites, SafePrompt Guard may process prompt text locally in order to detect
+          risky content before send. This may include passwords, credentials, tokens, API keys,
+          secrets, internal references, customer-specific terms, URLs, hosts, private IP addresses,
+          emails, and similar text content entered by the user.
+        </p>
+      </section>
+
+      <section class="policyCard">
+        <h2>What the extension stores locally</h2>
+        <p>The extension stores data on the device using <code>chrome.storage.local</code>.</p>
+        <ul class="policyList">
+          <li>Extension settings such as whether scanning is enabled.</li>
+          <li>Total detection count used by the toolbar popup.</li>
+          <li>The latest warning summary shown in the popup.</li>
+          <li>Local DB learned values manually added by the user.</li>
+        </ul>
+      </section>
+
+      <section class="policyCard">
+        <h2>What the extension does not do</h2>
+        <ul class="policyList">
+          <li>It does not send prompt content to a SafePrompt Guard backend.</li>
+          <li>It does not require an account or authentication system.</li>
+          <li>It does not use external detection APIs in the default release.</li>
+          <li>It does not sell user data.</li>
+          <li>It does not transfer user data to third parties for unrelated purposes.</li>
+        </ul>
+      </section>
+
+      <section class="policyCard">
+        <h2>Supported sites</h2>
+        <p>At the time of this policy, the extension runs only on these supported sites:</p>
+        <ul class="policyList">
+          <li><code>chatgpt.com</code></li>
+          <li><code>chat.openai.com</code></li>
+          <li><code>claude.ai</code></li>
+          <li><code>gemini.google.com</code></li>
+          <li><code>perplexity.ai</code></li>
+        </ul>
+      </section>
+
+      <section class="policyCard">
+        <h2>User controls</h2>
+        <p>
+          Users can remove learned Local DB values from the extension popup or the Local DB
+          console. Users can also disable scanning from the extension popup.
+        </p>
+      </section>
+
+      <section class="policyCard">
+        <h2>Support</h2>
+        <p>
+          Support for SafePrompt Guard is handled through GitHub Issues:
+          <a href="https://github.com/stiliyan-dev/safeprompt-guard/issues">
+            https://github.com/stiliyan-dev/safeprompt-guard/issues
+          </a>
+        </p>
+        <p>
+          If you submit information through GitHub Issues, that submission is governed by GitHub's
+          own services and policies in addition to this extension policy.
+        </p>
+      </section>
+
+      <section class="policyCard">
+        <h2>Changes to this policy</h2>
+        <p>
+          This policy may be updated if the extension's behavior changes, such as adding optional
+          online checks or new storage behavior. Material updates should be reflected in the Chrome
+          Web Store disclosures and on this page.
+        </p>
+      </section>
+    </main>
+
+    <footer class="siteFooter">
+      <div>SafePrompt Guard</div>
+      <div class="siteFooter__links">
+        <a href="./index.html">Home</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard/issues">Support</a>
+        <a href="https://github.com/stiliyan-dev/safeprompt-guard">GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+<svg width="980" height="240" viewBox="0 0 980 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="980" height="240" rx="40" fill="#07111F" />
+  <g transform="translate(36 24)">
+    <rect x="0" y="0" width="192" height="192" rx="48" fill="#0E2E4E" />
+    <path d="M96 28L138 44.5V88.3C138 117.2 119 141.2 96 149.8C73 141.2 54 117.2 54 88.3V44.5L96 28Z" stroke="#4DC6FF" stroke-width="10" stroke-linejoin="round" />
+    <path d="M69 73C69 65.268 75.268 59 83 59H119C126.732 59 133 65.268 133 73V87C133 94.732 126.732 101 119 101H104L92 113V101H83C75.268 101 69 94.732 69 87V73Z" fill="#EAF6FF" fill-opacity="0.12" stroke="#B7EBFF" stroke-width="7" stroke-linejoin="round" />
+    <path d="M83 76H117" stroke="#4DC6FF" stroke-width="7" stroke-linecap="round" />
+    <path d="M83 89H109" stroke="#F3AA34" stroke-width="7" stroke-linecap="round" />
+  </g>
+  <g transform="translate(272 64)">
+    <text x="0" y="48" fill="#EEF4FF" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="-1.8">SafePrompt Guard</text>
+    <text x="0" y="98" fill="#96A8C8" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500">Local prompt security for AI workflows and internal data hygiene.</text>
+    <rect x="0" y="128" width="188" height="40" rx="20" fill="#123149" />
+    <text x="22" y="154" fill="#4DC6FF" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">Local-first detection</text>
+    <rect x="202" y="128" width="178" height="40" rx="20" fill="#16263F" />
+    <text x="224" y="154" fill="#F3AA34" font-family="Segoe UI Variable, Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">Security enterprise</text>
+  </g>
+</svg>
