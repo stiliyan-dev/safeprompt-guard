@@ -39,27 +39,27 @@ powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guar
 | G3 | `content.js` no longer contains submit interception | Gate fails |
 | G4 | `content.js` no longer contains the inline warning render path | Gate fails |
 | G5 | `styles.css` no longer contains the page debug badge style | Gate fails |
-| G6 | Manual ChatGPT smoke with `Password=ProjectRedPass!2026` | Warning appears near the send area |
+| G6 | Manual ChatGPT smoke with `Password=ExamplePass!2026` | Warning appears near the send area |
 
 ## Detector Cases
 
 | ID | Input | Expected Result |
 | --- | --- | --- |
-| D1 | `Rel7.xpass!` | Detect `HIGH` password |
-| D2 | `727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc` | Detect `HIGH` token |
+| D1 | `ExamplePass!2026` | Detect `HIGH` password |
+| D2 | `0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef` | Detect `HIGH` token |
 | D3 | `Port 1433` | Ignore |
 | D4 | `project ProjectRed` | `LOW` or ignore |
 | D5 | `ProjectRed internal migration document` | Detect `MEDIUM` |
-| D6 | `ProjectRed password: Rel7.xpass!` | Detect `HIGH` |
+| D6 | `ProjectRed password: ExamplePass!2026` | Detect `HIGH` |
 | D7 | `192.168.1.10` | Ignore |
-| D8 | `Customer Alpha token 727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc` | Detect `HIGH` |
+| D8 | `Customer Alpha token 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef` | Detect `HIGH` |
 | D9 | `Please contact john.doe@example.com` | Detect email if email detection is enabled. Current expected behavior: detect `MEDIUM` email |
 | D10 | Long migration email with ports, server names, environments, and one embedded token near the end | Ignore infra terms. Detect only the token and any related risky context |
-| D11 | Demo environment access email with `Customer: Demo Corporation`, `Project: DemoSales`, `Environment: demo-sales-prod`, `Username: demo_admin`, `Password: DemoAccess2026`, internal URL, two hosts, and two private IPs | Detect and sanitize all listed sensitive items, including the labeled username and password |
-| D12 | `Password: DemoAccess2026` | Detect `HIGH` password even without a special character because the field label is explicit |
+| D11 | Demo environment access email with `Customer: Demo Corporation`, `Project: DemoSales`, `Environment: demo-sales-prod`, `Username: demo_admin`, `Password: ExampleAccess2026`, internal URL, two hosts, and two private IPs | Detect and sanitize all listed sensitive items, including the labeled username and password |
+| D12 | `Password: ExampleAccess2026` | Detect `HIGH` password even without a special character because the field label is explicit |
 | D13 | `DB_PASSWORD=OrionSecure2026` | Detect `HIGH` password and mask only the value |
-| D14 | `client_secret=PhoenixSecret!456` | Detect `HIGH` secret without treating the full assignment as a password |
-| D15 | `mongodb://admin:MongoPass!123@172.20.7.12:27017` | Detect connection string and internal IP without treating the full URI as a password |
+| D14 | `client_secret=DemoClientSecret!2026` | Detect `HIGH` secret without treating the full assignment as a password |
+| D15 | `mongodb://admin:DemoMongoPass!2026@172.20.7.12:27017` | Detect connection string and internal IP without treating the full URI as a password |
 | D16 | `Please rotate Password123 after cutover.` | Detect `HIGH` password from the curated local common-password pack |
 | D17 | `Username: admin` + `Password: admin` | Detect `HIGH` password and identify the default credential pair |
 
@@ -67,10 +67,10 @@ powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guar
 
 | ID | Input | Action | Expected Output |
 | --- | --- | --- | --- |
-| R1 | `ProjectRed password: Rel7.xpass!` | Mask | `ProjectRed password: ********` while keeping surrounding text intact |
-| R2 | `Customer Alpha token 727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc` | Mask | `Customer Alpha token [MASKED]` |
+| R1 | `ProjectRed password: ExamplePass!2026` | Mask | `ProjectRed password: ********` while keeping surrounding text intact |
+| R2 | `Customer Alpha token 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef` | Mask | `Customer Alpha token [MASKED]` |
 | R3 | `Please contact john.doe@example.com` | Mask | `Please contact [MASKED]` |
-| R4 | `Rel7.xpass!` | Mask | `********` |
+| R4 | `ExamplePass!2026` | Mask | `********` |
 | R5 | `project ProjectRed` | Mask | No required change if finding is ignored or `LOW` only |
 
 ## Learned Local DB Cases
@@ -162,9 +162,9 @@ powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guar
 
 | ID | Scenario | Expected Result |
 | --- | --- | --- |
-| C1 | Paste `Password=ProjectRedPass!2026` into ChatGPT | Debug badge shows `Loaded: Yes`, `Editor: Found`, then findings appear |
-| C2 | Paste `Rel7.xpass!` into ChatGPT | Inline warning appears near the send area |
-| C3 | Paste `token=727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc` into ChatGPT | Inline warning appears and console logs findings |
+| C1 | Paste `Password=ExamplePass!2026` into ChatGPT | Debug badge shows `Loaded: Yes`, `Editor: Found`, then findings appear |
+| C2 | Paste `ExamplePass!2026` into ChatGPT | Inline warning appears near the send area |
+| C3 | Paste `token=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef` into ChatGPT | Inline warning appears and console logs findings |
 | C4 | Paste connection string example into ChatGPT | Warning appears before send |
 | C5 | Click `Send` after warning is visible | Send is intercepted until user acts |
 | C6 | Press `Enter` to send after warning is visible | Send is intercepted until user acts |

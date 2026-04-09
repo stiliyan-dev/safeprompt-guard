@@ -234,7 +234,7 @@ if ($errors.Count -gt 0) {
   Write-Host "Manual ChatGPT smoke path still required:" -ForegroundColor Yellow
   Write-Host "1. Reload the unpacked extension."
   Write-Host "2. Open https://chatgpt.com/."
-  Write-Host "3. Paste Password=ProjectRedPass!2026."
+  Write-Host "3. Paste Password=ExamplePass!2026."
   Write-Host "4. Confirm the page badge shows Loaded and Editor found."
   Write-Host "5. Confirm the inline warning appears near the send area."
   exit 1
@@ -272,7 +272,7 @@ Write-Host ""
 Write-Host "Manual ChatGPT smoke path to run after this script:" -ForegroundColor Yellow
 Write-Host "1. Reload the unpacked extension."
 Write-Host "2. Open https://chatgpt.com/."
-Write-Host "3. Paste Password=ProjectRedPass!2026."
+Write-Host "3. Paste Password=ExamplePass!2026."
 Write-Host "4. Confirm the debug badge shows Loaded: Yes and Editor: Found."
 Write-Host "5. Confirm the inline warning appears before send."
 Write-Host "6. Click Send and confirm the warning is still enforced."

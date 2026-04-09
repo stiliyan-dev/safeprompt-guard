@@ -106,7 +106,7 @@ Pass/Fail field:
 
 - Steps:
   Open `https://chatgpt.com/`
-  Paste `Password=ProjectRedPass!2026`
+  Paste `Password=ExamplePass!2026`
   Wait one second
 - Expected result:
   The inline warning appears near the send area, or findings are clearly logged in the page console
@@ -159,7 +159,7 @@ Pass/Fail field:
 ### D2. One finding
 
 - Steps:
-  Send `Rel7.xpass!`
+  Send `ExamplePass!2026`
 - Expected result:
   One inline warning appears near the send area
 - Pass: `___`
@@ -177,7 +177,7 @@ Pass/Fail field:
 ### D3a. Connection string
 
 - Steps:
-  Paste `ConnectionString=Server=tcp:berry-sql.database.windows.net,1433;Initial Catalog=ProjectRedDB;User ID=berry_admin;Password=ProjectRedPass!2026;Encrypt=True;`
+  Paste `ConnectionString=Server=tcp:demo-sql.example,1433;Initial Catalog=DemoDb;User ID=demo_user;Password=ExamplePass!2026;Encrypt=True;`
   Click `Send`
 - Expected result:
   Warning appears and send is intercepted

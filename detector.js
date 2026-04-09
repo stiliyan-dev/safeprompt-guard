@@ -74,7 +74,7 @@
   });
   const SECRET_TYPES = new Set(["Password", "Token", "API key", "Secret", "Connection string", "JWT", "OpenAI key", "GitHub token", "AWS key", "Private key", "High entropy token or API key", "Email address"]);
   const TEST_CASES = [
-    { name: "password", input: "Rel7.xpass!", expectedSeverities: [HIGH], expectedTypes: ["Password"] },
+    { name: "password", input: "ExamplePass!2026", expectedSeverities: [HIGH], expectedTypes: ["Password"] },
     {
       name: "common-password-static-pack",
       input: "Please rotate Password123 after cutover.",
@@ -90,25 +90,25 @@
       expectedTypes: ["Account name", "Password"],
       expectedReasons: ["Known default username/password pair"]
     },
-    { name: "entropy-token", input: "727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc", expectedSeverities: [HIGH], expectedTypes: ["High entropy token or API key"] },
+    { name: "entropy-token", input: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", expectedSeverities: [HIGH], expectedTypes: ["High entropy token or API key"] },
     { name: "port", input: "Port 1433", expectedSeverities: [NONE] },
     { name: "project-alone", input: "project ProjectRed", expectedSeverities: [LOW, NONE] },
     { name: "project-context", input: "ProjectRed internal migration document", expectedSeverities: [MEDIUM], expectedTypes: ["Project name"] },
-    { name: "project-plus-password", input: "ProjectRed password: Rel7.xpass!", expectedSeverities: [HIGH], expectedTypes: ["Password", "Project name"], replaceExpected: "[PROJECT_NAME] password: [PASSWORD_REDACTED]" },
+    { name: "project-plus-password", input: "ProjectRed password: ExamplePass!2026", expectedSeverities: [HIGH], expectedTypes: ["Password", "Project name"], replaceExpected: "[PROJECT_NAME] password: [PASSWORD_REDACTED]" },
     { name: "ipv4", input: "192.168.1.10", expectedSeverities: [MEDIUM], expectedTypes: ["Internal IP address"], replaceExpected: "[INTERNAL_IP_REDACTED]" },
-    { name: "customer-plus-token", input: "Customer Alpha token 727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc", expectedSeverities: [HIGH], expectedTypes: ["Customer name", "High entropy token or API key"], replaceExpected: "Customer [CUSTOMER_NAME] token [TOKEN_REDACTED]" },
+    { name: "customer-plus-token", input: "Customer Alpha token 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", expectedSeverities: [HIGH], expectedTypes: ["Customer name", "High entropy token or API key"], replaceExpected: "Customer [CUSTOMER_NAME] token [TOKEN_REDACTED]" },
     { name: "email", input: "Please contact john.doe@example.com", expectedSeverities: [MEDIUM], expectedTypes: ["Email address"], replaceExpected: "Please contact [EMAIL_REDACTED]" },
     {
       name: "long-technical-email",
       input:
-        "Hello team, Port 1433 is required for migration. Server coll-dock is up. The ProductOne 4 environment is paused. Please use token 727827956dd0e0c64dce2e9f2a47b5556698001fc7870edd4fda253da106aacc for emergency recovery.",
+        "Hello team, Port 1433 is required for migration. Server coll-dock is up. The ProductOne 4 environment is paused. Please use token 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef for emergency recovery.",
       expectedSeverities: [HIGH],
       expectedTypes: ["High entropy token or API key"]
     },
     {
       name: "phoenix-credential-email",
       input:
-        "Subject: Phoenix Platform Deployment Details\n\nService Account Token:\n\nk8s_token: k8s-prod-token-983475983475\n\nDocker Registry:\npassword: DockerPass!456\n\nRedis Cache:\nREDIS_PASSWORD=RedisSecure!789",
+        "Subject: Phoenix Platform Deployment Details\n\nService Account Token:\n\nk8s_token: k8s-demo-token-000111222333\n\nDocker Registry:\npassword: DemoRegistryPass!2026\n\nRedis Cache:\nREDIS_PASSWORD=DemoCachePass!2026",
       expectedSeverities: [HIGH],
       expectedTypes: ["Token", "Password"]
     },
@@ -122,7 +122,7 @@
     {
       name: "email-suite-orion",
       input:
-        "Subject: Orion Migration Readiness\nProject Name: Orion\nCustomer Name: Northwind Analytics\nEnvironment: orion-prod\nInternal URL: https://orion-prod.internal.local\nServer IP: 172.20.4.17\nUsername: orion_admin\nPassword: TempPass!2026\nDB_HOST=172.20.4.21\nDB_NAME=oriondb\nDB_USER=dbadmin\nDB_PASSWORD=OrionDB!Secure123",
+        "Subject: Orion Migration Readiness\nProject Name: Orion\nCustomer Name: Northwind Analytics\nEnvironment: orion-prod\nInternal URL: https://orion-prod.internal.local\nServer IP: 172.20.4.17\nUsername: orion_admin\nPassword: DemoTempPass!2026\nDB_HOST=172.20.4.21\nDB_NAME=oriondb\nDB_USER=dbadmin\nDB_PASSWORD=DemoDbPass!2026",
       expectedSeverities: [HIGH],
       expectedTypes: ["Project name", "Customer name", "Environment name", "Internal URL", "Internal IP address", "Account name", "Password"],
       expectedMinActionable: 9
@@ -130,7 +130,7 @@
     {
       name: "email-suite-phoenix-api",
       input:
-        "Customer: Contoso Logistics\nBelow are the integration credentials for Phoenix Platform.\nAPI Endpoint:\nhttps://api.phoenix.internal/v1\nclient_id=phoenix-client-001\nclient_secret=PhoenixSecret!456\nwebhook_token=wh_123456789abcdef\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.TESTTOKEN",
+        "Customer: Contoso Logistics\nBelow are the integration credentials for Phoenix Platform.\nAPI Endpoint:\nhttps://api.phoenix.internal/v1\nclient_id=phoenix-client-001\nclient_secret=DemoClientSecret!2026\nwebhook_token=wh_demo_1234567890abcd\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLEPAYLOAD.EXAMPLESIGNATURE",
       expectedSeverities: [HIGH],
       expectedTypes: ["Customer name", "Product name", "Internal URL", "Resource identifier", "Secret", "Token"],
       expectedMinActionable: 6
@@ -138,7 +138,7 @@
     {
       name: "email-suite-atlas-infra",
       input:
-        "The infrastructure for Project Atlas has been provisioned.\nCustomer: Fabrikam Industries\nPrimary Host: atlas-app01.internal.local\nBackup Host: atlas-db01.internal.local\n10.88.21.17\n10.88.21.18\nssh deploy@10.88.21.17\nPassword: DeployAccess#2026\nregistry.internal.local:5000\nUsername: docker_admin\nPassword: DockerPass!456",
+        "The infrastructure for Project Atlas has been provisioned.\nCustomer: Fabrikam Industries\nPrimary Host: atlas-app01.internal.local\nBackup Host: atlas-db01.internal.local\n10.88.21.17\n10.88.21.18\nssh deploy@10.88.21.17\nPassword: DemoDeployPass!2026\nregistry.internal.local:5000\nUsername: docker_admin\nPassword: DemoRegistryPass!2026",
       expectedSeverities: [HIGH],
       expectedTypes: ["Project name", "Customer name", "Internal host", "Internal IP address", "Access target", "Password", "Account name"],
       expectedMinActionable: 9
@@ -146,7 +146,7 @@
     {
       name: "email-suite-nova-db",
       input:
-        "We will perform maintenance for Project Nova tonight.\nCustomer: Global Retail Systems\nServer: db-nova.internal\nPort: 1433\nUsername: sa\nPassword: SQLAdmin!2026\nServer=172.20.6.45;Database=nova;User Id=admin;Password=NovaSecurePass!123;\nStorage Account: novabackups\nAccess Key: BackupKey123456789",
+        "We will perform maintenance for Project Nova tonight.\nCustomer: Global Retail Systems\nServer: db-nova.internal\nPort: 1433\nUsername: sa\nPassword: DemoSqlPass!2026\nServer=172.20.6.45;Database=nova;User Id=admin;Password=DemoServerPass!2026;\nStorage Account: novabackups\nAccess Key: DemoBackupKey123456",
       expectedSeverities: [HIGH],
       expectedTypes: ["Project name", "Customer name", "Internal host", "Resource identifier", "Account name", "Password", "Internal IP address", "API key"],
       expectedMinActionable: 9
@@ -154,15 +154,15 @@
     {
       name: "email-suite-helios-cloud",
       input:
-        "The cloud environment for Helios is ready.\nCustomer: BlueWave Energy\nTenant ID: 784392048392\nSubscription ID: 239847239847\nAWS_ACCESS_KEY_ID=AKIA1234567890TEST\nAWS_SECRET_ACCESS_KEY=TestSecretKey123456789\nVPN_USER=vpn_admin\nVPN_PASSWORD=VpnSecure!2026\nhttps://helios-cloud.internal.local",
+        "The cloud environment for Helios is ready.\nCustomer: BlueWave Energy\nTenant ID: 784392048392\nSubscription ID: 239847239847\nAWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\nAWS_SECRET_ACCESS_KEY=DemoSecretKey123456\nVPN_USER=vpn_admin\nVPN_PASSWORD=DemoVpnPass!2026\nhttps://helios-cloud.internal.local",
       expectedSeverities: [HIGH],
-      expectedTypes: ["Project name", "Customer name", "Resource identifier", "API key", "Secret", "Account name", "Password", "Internal URL"],
+      expectedTypes: ["Project name", "Customer name", "Resource identifier", "AWS key", "Secret", "Account name", "Password", "Internal URL"],
       expectedMinActionable: 8
     },
     {
       name: "email-suite-vega-support",
       input:
-        "We are handing over the Vega environment to the support team.\nCustomer: Silverline Telecom\nhttps://vega.internal.local\nhttps://vega-admin.internal.local\nREDIS_HOST=172.20.7.10\nREDIS_PASSWORD=RedisSecure!789\nsession_secret=sessionSecret!2026\nmongodb://admin:MongoPass!123@172.20.7.12:27017",
+        "We are handing over the Vega environment to the support team.\nCustomer: Silverline Telecom\nhttps://vega.internal.local\nhttps://vega-admin.internal.local\nREDIS_HOST=172.20.7.10\nREDIS_PASSWORD=DemoCachePass!2026\nsession_secret=DemoSessionSecret!2026\nmongodb://admin:DemoMongoPass!2026@172.20.7.12:27017",
       expectedSeverities: [HIGH],
       expectedTypes: ["Project name", "Customer name", "Internal URL", "Internal IP address", "Password", "Secret", "Connection string"],
       expectedMinActionable: 7
@@ -170,7 +170,7 @@
     {
       name: "email-suite-demo-access",
       input:
-        "Subject: Demo Environment Access Details\nCustomer: Demo Corporation\nProject: DemoSales\nEnvironment: demo-sales-prod\nUsername: demo_admin\nPassword: DemoAccess2026\nhttps://demo-sales.company-demo.local\nPrimary Host: demo-app01.company-demo.local\nDatabase Host: demo-db01.company-demo.local\n10.10.10.11\n10.10.10.12",
+        "Subject: Demo Environment Access Details\nCustomer: Demo Corporation\nProject: DemoSales\nEnvironment: demo-sales-prod\nUsername: demo_admin\nPassword: ExampleAccess2026\nhttps://demo-sales.company-demo.local\nPrimary Host: demo-app01.company-demo.local\nDatabase Host: demo-db01.company-demo.local\n10.10.10.11\n10.10.10.12",
       expectedSeverities: [HIGH],
       expectedTypes: ["Customer name", "Project name", "Environment name", "Account name", "Password", "Internal URL", "Internal host", "Internal IP address"],
       expectedMinActionable: 10
