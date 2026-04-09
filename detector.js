@@ -29,7 +29,7 @@
     allowlistedTerms: ["port", "sql", "docker", "server", "vm", "cluster", "coll-dock", "environment", "database"],
     riskyContextWords: ["password", "token", "secret", "key", "credential", "internal", "confidential", "customer", "prod", "tenant", "migration", "attachment", "document"]
   };
-  const BASE_ALLOWLIST = ["backup", "cluster", "coll-dock", "database", "docker", "environment", "host", "machine", "migration", "nuxeo", "port", "resource group", "server", "service", "sql", "tenant", "vm"];
+  const BASE_ALLOWLIST = ["backup", "cluster", "coll-dock", "database", "docker", "environment", "host", "machine", "migration", "productthree", "port", "resource group", "server", "service", "sql", "tenant", "vm"];
   const REPLACEMENT_TEMPLATES = Object.freeze({
     password: "[PASSWORD_REDACTED]",
     token: "[TOKEN_REDACTED]",
