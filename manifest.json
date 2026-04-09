@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SafePrompt Guard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Detect sensitive content before it is sent to AI tools.",
   "icons": {
     "16": "assets/brand/icons/icon-16.png",

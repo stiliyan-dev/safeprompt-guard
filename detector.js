@@ -75,6 +75,7 @@
   const SECRET_TYPES = new Set(["Password", "Token", "API key", "Secret", "Connection string", "JWT", "OpenAI key", "GitHub token", "AWS key", "Private key", "High entropy token or API key", "Email address"]);
   const TEST_CASES = [
     { name: "password", input: "ExamplePass!2026", expectedSeverities: [HIGH], expectedTypes: ["Password"] },
+    { name: "password-lowercase-special-digit", input: "afdsdafs!@#!@#123123", expectedSeverities: [HIGH], expectedTypes: ["Password"] },
     {
       name: "common-password-static-pack",
       input: "Please rotate Password123 after cutover.",
@@ -1342,8 +1343,32 @@
   }
 
   function looksLikePassword(value) {
-    return value.length >= 8 && value.length <= 64 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[!@#$%^&*+=?]/.test(value) && !isIpv4(value) && !isUrl(value) && !isFilePath(value) && !isVersion(value) && !/^[A-Fa-f0-9]{32,}$/.test(value) && !isMachine(value);
-  }
+      if (
+        value.length < 8 ||
+        value.length > 64 ||
+        isIpv4(value) ||
+        isUrl(value) ||
+        isFilePath(value) ||
+        isVersion(value) ||
+        looksLikeAccessTarget(value) ||
+        /^[A-Fa-f0-9]{32,}$/.test(value) ||
+        isMachine(value)
+      ) {
+        return false;
+      }
+
+      const hasUpper = /[A-Z]/.test(value);
+      const hasLower = /[a-z]/.test(value);
+      const hasDigit = /\d/.test(value);
+      const hasSpecial = /[!@#$%^&*+=?]/.test(value);
+      const classCount = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
+
+      if (hasUpper && hasLower && hasDigit && hasSpecial) {
+        return true;
+      }
+
+      return value.length >= 12 && hasLower && hasDigit && hasSpecial && classCount >= 3;
+    }
 
   function preview(finding) {
     const value = collapseWhitespace(finding.match);
@@ -1633,6 +1658,10 @@
 
   function looksLikeCredentialedUri(value) {
     return /^[a-z][a-z0-9+.-]*:\/\/[^/\s:@]+:[^/\s@]+@/i.test(value);
+  }
+
+  function looksLikeAccessTarget(value) {
+    return /^[A-Za-z_][A-Za-z0-9._-]{0,63}@(?:(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})|[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+(?::\d{2,5})?)$/i.test(value);
   }
 
   function containsInternalAddress(value) {
