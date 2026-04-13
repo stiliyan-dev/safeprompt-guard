@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc">
-    <img alt="Chrome Web Store" src="https://img.shields.io/badge/Chrome_Web_Store-v1.0.1-blue?logo=google-chrome&logoColor=white" />
+    <img alt="Chrome Web Store" src="https://img.shields.io/badge/Chrome_Web_Store-v2.0.0-blue?logo=google-chrome&logoColor=white" />
   </a>
   <img alt="Rating" src="https://img.shields.io/badge/Rating-5.0%20%E2%98%85-gold" />
   <img alt="Manifest" src="https://img.shields.io/badge/Manifest-V3-green" />
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/screenshots/warning.png" alt="SafePrompt Guard warning popup" width="800" />
+  <img src="docs/assets/store-screenshots/01-warning-popup.png" alt="SafePrompt Guard warning popup" width="800" />
 </p>
 
 ---
@@ -29,11 +29,11 @@
 
 ### Chrome Web Store (recommended)
 
-[**Install SafePrompt Guard â†’**](https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc)
+[**Install SafePrompt Guard**](https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc)
 
 ### Manual (developer mode)
 
-1. Open Chrome â†’ `chrome://extensions`
+1. Open Chrome -> `chrome://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
 4. Select the `apps/SafePrompt-Guard` folder
@@ -44,12 +44,12 @@
 
 SafePrompt Guard scans prompt text locally on supported AI tools and flags:
 
-- **Passwords and labeled credentials** â€” `password:`, `pass=`, `secret:`, and common credentials
-- **Tokens and keys** â€” API keys, JWTs, private keys, webhook tokens, connection strings
-- **Internal references** â€” private IPs, internal hostnames, organization-specific values
-- **Common and default passwords** â€” curated offline list checked without any network call
+- **Passwords and labeled credentials** -- `password:`, `pass=`, `secret:`, and common credentials
+- **Tokens and keys** -- API keys, JWTs, private keys, webhook tokens, connection strings
+- **Internal references** -- private IPs, internal hostnames, organization-specific values
+- **Common and default passwords** -- curated offline list checked without any network call
 
-When risky content is detected, a compact inline warning appears near the send button. You can review each finding, mask it, or add it to the Local DB for future detection â€” all without leaving the writing flow.
+When risky content is detected, a compact inline warning appears near the send button. You can review each finding, mask it, or add it to the Local DB for future detection -- all without leaving the writing flow.
 
 ---
 
@@ -57,26 +57,26 @@ When risky content is detected, a compact inline warning appears near the send b
 
 | Site | Status |
 |------|--------|
-| `chatgpt.com` / `chat.openai.com` | âœ… Supported |
-| `claude.ai` | âœ… Supported |
-| `gemini.google.com` | âœ… Supported |
-| `perplexity.ai` | âœ… Supported |
+| `chatgpt.com` / `chat.openai.com` | Supported |
+| `claude.ai` | Supported |
+| `gemini.google.com` | Supported |
+| `perplexity.ai` | Supported |
 
 ---
 
 ## How It Works
 
-**01 Â· Scan before send** â€” Prompt text is analyzed locally every time you are about to send. No text leaves your browser to be scanned.
+**01 - Scan before send** -- Prompt text is analyzed locally every time you are about to send. No text leaves your browser to be scanned.
 
-**02 Â· Review findings** â€” A compact inline warning near the send area summarizes what was found with severity (HIGH / MEDIUM / LOW). Each finding shows a masked preview and a per-finding Mask button.
+**02 - Review findings** -- A compact inline warning near the send area summarizes what was found with severity (HIGH / MEDIUM / LOW). Each finding shows a masked preview and a per-finding Mask button.
 
-**03 Â· Mask or learn** â€” Mask a specific value immediately (replaces it with `********` or `[MASKED_TOKEN]`), or add it to the Local DB so future prompts are checked against it automatically.
+**03 - Mask or learn** -- Mask a specific value immediately (replaces it with `********` or `[MASKED_TOKEN]`), or add it to the Local DB so future prompts are checked against it automatically.
 
 ---
 
 ## Local DB
 
-Open the extension popup â†’ **Open DB**.
+Open the extension popup -> **Open DB**.
 
 The Local DB console supports:
 
@@ -92,13 +92,13 @@ All values stay local. They are stored in `chrome.storage.local` and are never u
 
 ## Screenshots
 
-| Warning popup | Local DB console |
+| Warning popup | Finding detail |
 |---|---|
-| ![Warning](docs/assets/screenshots/warning.png) | ![Local DB](docs/assets/screenshots/local-db-console.png) |
+| ![Warning](docs/assets/store-screenshots/01-warning-popup.png) | ![Findings](docs/assets/store-screenshots/02-findings-detail.png) |
 
-| Import / Export | Toolbar popup |
+| Local DB console | Extension popup |
 |---|---|
-| ![Import Export](docs/assets/screenshots/import-export.png) | ![Local-first](docs/assets/screenshots/local-first.png) |
+| ![Local DB](docs/assets/store-screenshots/03-local-db-console.png) | ![Popup](docs/assets/store-screenshots/04-extension-popup.png) |
 
 ---
 
@@ -187,5 +187,3 @@ webhook_token=wh_123456789abcdef
 - [Homepage](https://stiliyan-dev.github.io/safeprompt-guard/)
 - [Privacy Policy](https://stiliyan-dev.github.io/safeprompt-guard/privacy-policy.html)
 - [Support / Issues](https://github.com/stiliyan-dev/safeprompt-guard/issues)
-
-
