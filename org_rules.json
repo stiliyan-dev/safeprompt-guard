@@ -1,13 +1,9 @@
 {
-  "customerNames": ["Alpha", "Beta", "Gamma"],
-  "projectNames": ["ProjectRed", "Orion", "Falcon"],
-  "internalCodeNames": ["DeltaOps"],
-  "productNames": ["ProductThree", "Attivio", "ProductOne"],
-  "internalOnlyPhrases": [
-    "internal migration manual",
-    "customer files",
-    "private environment"
-  ],
+  "customerNames": [],
+  "projectNames": [],
+  "internalCodeNames": [],
+  "productNames": [],
+  "internalOnlyPhrases": [],
   "allowlistedTerms": [
     "port",
     "sql",
@@ -15,7 +11,6 @@
     "server",
     "vm",
     "cluster",
-    "coll-dock",
     "environment",
     "database"
   ],

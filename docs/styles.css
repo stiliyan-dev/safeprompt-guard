@@ -164,8 +164,8 @@ img {
 }
 
 .heroCopy h1 {
-  font-size: clamp(2.6rem, 5vw, 4.7rem);
-  max-width: 12ch;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  max-width: 22ch;
 }
 
 .heroLead,
@@ -378,6 +378,45 @@ img {
 .sectionBlock--cta p {
   margin: 10px 0 0;
   color: var(--muted);
+}
+
+.ctaCopy h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  margin: 10px 0 0;
+  line-height: 1.1;
+}
+
+.heroBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(8, 20, 38, 0.55);
+  border: 1px solid rgba(67, 123, 186, 0.34);
+  color: var(--muted);
+}
+
+.heroBadge--stars {
+  color: var(--amber);
+  border-color: rgba(240, 171, 42, 0.36);
+  background: rgba(240, 171, 42, 0.08);
+}
+
+.topnav__cta {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.85rem;
 }
 
 code {

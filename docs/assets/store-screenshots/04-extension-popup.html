@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<!--
+  Chrome Web Store screenshot template 4/5
+  Shows: Extension popup open on Gemini — toolbar popup with stats and last finding
+  Size: Open in Chrome at 1280×800, zoom 100%, then screenshot
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>SafePrompt Guard — Extension popup</title>
+  <style>
+    html { background: #1E1F20; overflow: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #1E1F20;
+    }
+
+    /* ── Browser chrome ──────────────────────────────── */
+    .browser { width: 1280px; height: 800px; display: flex; flex-direction: column; }
+    .browser-bar {
+      flex-shrink: 0; height: 52px;
+      background: #202124;
+      display: flex; align-items: center; gap: 10px; padding: 0 14px;
+      border-bottom: 1px solid #3C4043;
+    }
+    .tl-dots { display: flex; gap: 7px; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .tl-dot--r { background: #FF5F57; }
+    .tl-dot--y { background: #FFBD2E; }
+    .tl-dot--g { background: #28C840; }
+    .tab {
+      display: flex; align-items: center; gap: 6px;
+      height: 32px; padding: 0 14px;
+      background: #35363A; border-radius: 8px 8px 0 0;
+      font-size: 12px; color: #E8EAED; white-space: nowrap; min-width: 140px;
+    }
+    .urlbar {
+      flex: 1; max-width: 440px; height: 28px;
+      background: #3C4043; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px; font-size: 12px; color: #9AA0A6;
+    }
+    .ext-area { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
+    .ext-btn {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.08); font-size: 14px;
+    }
+    .ext-btn--active {
+      background: rgba(64,189,248,0.22);
+      box-shadow: 0 0 0 2px rgba(64,189,248,0.5);
+    }
+    .browser-content {
+      flex: 1; display: flex; overflow: hidden; position: relative;
+    }
+
+    /* ── Gemini interface ────────────────────────────── */
+    .gemini-page {
+      flex: 1;
+      background: #1E1F20;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .gemini-header {
+      height: 56px; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #3C4043;
+    }
+    .gemini-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 18px; font-weight: 600; color: #E8EAED;
+    }
+    .gemini-logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white; font-weight: 700;
+    }
+    .gemini-chat { flex: 1; padding: 30px 120px; display: flex; flex-direction: column; gap: 20px; overflow: hidden; }
+    .msg { display: flex; gap: 12px; font-size: 15px; color: #E8EAED; line-height: 1.65; }
+    .msg--user { justify-content: flex-end; }
+    .msg--user .bubble {
+      max-width: 560px;
+      background: rgba(66,133,244,0.15); border: 1px solid rgba(66,133,244,0.3);
+      border-radius: 16px 16px 4px 16px; padding: 12px 16px;
+    }
+    .msg--ai .avatar {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: white; font-weight: 700;
+    }
+    .msg--ai .body { color: #D0D3D4; max-width: 640px; }
+    .composer-area { padding: 6px 120px 18px; }
+    .composer-box {
+      background: #2A2B2E; border: 1px solid #5F6368;
+      border-radius: 28px; padding: 14px 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .composer-text { flex: 1; font-size: 15px; color: #9AA0A6; }
+    .composer-send {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #8AB4F8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #202124;
+    }
+    .overlay-scrim {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.38);
+    }
+
+    /* ── Extension popup panel ───────────────────────── */
+    .ext-popup {
+      position: absolute;
+      top: 0;
+      right: 68px;
+      width: 380px;
+      background: #0F1929;
+      border: 1px solid rgba(64,189,248,0.22);
+      border-top: 0;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 28px 64px rgba(0,0,0,0.6);
+      font-family: "Segoe UI", sans-serif;
+      color: #E2EAF4;
+      overflow: hidden;
+    }
+    .popup-hero {
+      padding: 16px 18px 14px;
+      background: linear-gradient(135deg, rgba(10,21,39,0.98), rgba(6,14,28,0.98));
+      border-bottom: 1px solid rgba(64,189,248,0.14);
+    }
+    .popup-brand { display: flex; align-items: center; gap: 10px; }
+    .popup-mark {
+      width: 32px; height: 32px;
+    }
+    .popup-brand h1 { font-size: 15px; font-weight: 700; color: #EFF5FF; }
+    .popup-brand p { font-size: 11px; color: #7A92B4; margin-top: 1px; }
+    .popup-meta { font-size: 11px; color: #4A6080; margin-top: 8px; }
+    .popup-meta strong { color: #40BDF8; }
+    .popup-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      padding: 12px 14px 0;
+    }
+    .popup-card {
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(64,189,248,0.12);
+      border-radius: 12px;
+    }
+    .popup-card-eyebrow { font-size: 10px; color: #4A6080; text-transform: uppercase; letter-spacing: 0.07em; }
+    .popup-card-title { font-size: 12px; font-weight: 600; color: #B0C4DE; margin-top: 3px; }
+    .switch-row { display: flex; align-items: center; justify-content: space-between; }
+    .sw { position: relative; width: 38px; height: 20px; }
+    .sw input { opacity: 0; width: 0; height: 0; }
+    .sw-track {
+      position: absolute; inset: 0; border-radius: 20px;
+      background: #19C37D;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 3px; transition: background 0.2s;
+    }
+    .sw-knob { width: 14px; height: 14px; border-radius: 50%; background: white; }
+    .metric { font-size: 24px; font-weight: 800; color: #40BDF8; }
+    .popup-section {
+      padding: 10px 14px;
+    }
+    .popup-section-label { font-size: 10px; color: #4A6080; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+    .popup-section-title { font-size: 12px; font-weight: 600; color: #B0C4DE; margin-bottom: 6px; }
+    .finding-preview {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(64,189,248,0.12);
+      border-radius: 10px; padding: 10px 12px; font-size: 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .fp-row { display: flex; gap: 6px; align-items: center; }
+    .fp-badge {
+      display: inline-flex; padding: 1px 6px; border-radius: 999px;
+      font-size: 10px; font-weight: 700;
+    }
+    .fp-badge--high { background: rgba(239,68,68,0.22); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .fp-badge--medium { background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .fp-text { font-size: 11px; color: #8BA8CC; }
+    .popup-db-section {
+      padding: 10px 14px 14px;
+    }
+    .popup-db-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .db-title { font-size: 12px; font-weight: 600; color: #B0C4DE; }
+    .db-count { font-size: 11px; color: #4A6080; }
+    .db-actions { display: flex; gap: 6px; }
+    .db-btn {
+      height: 28px; padding: 0 10px;
+      border-radius: 8px; font-size: 11px; font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .db-btn--cyan { background: rgba(64,189,248,0.16); border-color: rgba(64,189,248,0.36); color: #7DCFEF; }
+    .db-btn--ghost { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #8BA8CC; }
+    .db-btn--danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #F87171; }
+    .divider { height: 1px; background: rgba(64,189,248,0.1); margin: 0 14px; }
+
+    /* ── Arrow pointing to popup ─────────────────────── */
+    .ext-btn-label {
+      position: absolute; top: 16px; right: 68px;
+      font-size: 11px; color: #40BDF8; background: rgba(10,21,39,0.88);
+      border: 1px solid rgba(64,189,248,0.3); border-radius: 6px;
+      padding: 4px 10px; white-space: nowrap;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+<div class="browser">
+  <div class="browser-bar">
+    <div class="tl-dots">
+      <div class="tl-dot tl-dot--r"></div>
+      <div class="tl-dot tl-dot--y"></div>
+      <div class="tl-dot tl-dot--g"></div>
+    </div>
+    <div class="tab">✦ Gemini</div>
+    <div class="urlbar">
+      <span style="color:#34A853; font-size:11px;">🔒</span>
+      gemini.google.com
+    </div>
+    <div class="ext-area">
+      <div class="ext-btn">⧉</div>
+      <div class="ext-btn">🧩</div>
+      <div class="ext-btn ext-btn--active">🛡</div>
+    </div>
+  </div>
+
+  <div class="browser-content">
+    <div class="gemini-page">
+      <div class="gemini-header">
+        <div class="gemini-logo">
+          <div class="gemini-logo-icon">G</div>
+          Gemini
+        </div>
+      </div>
+      <div class="gemini-chat">
+        <div class="msg msg--user">
+          <div class="bubble">I need to write the DB migration runbook for the client handover next week.</div>
+        </div>
+        <div class="msg msg--ai">
+          <div class="avatar">G</div>
+          <div class="body">I can help you draft a full migration runbook. What database engine are you migrating, and do you have the source and target connection details ready?</div>
+        </div>
+        <div class="msg msg--user">
+          <div class="bubble">It's PostgreSQL 14 moving to a new host. I have all the credentials and service tokens.</div>
+        </div>
+        <div class="msg msg--ai">
+          <div class="avatar">G</div>
+          <div class="body">Great. Please share the connection details and I'll structure the runbook with pre-migration checks, cutover steps, and rollback procedures.</div>
+        </div>
+      </div>
+      <div class="composer-area">
+        <div class="composer-box">
+          <div class="composer-text">Ask Gemini…</div>
+          <div class="composer-send">↑</div>
+        </div>
+      </div>
+      <div class="overlay-scrim"></div>
+    </div>
+
+    <!-- Extension popup -->
+    <div class="ext-popup">
+      <div class="popup-hero">
+        <div class="popup-brand">
+          <svg class="popup-mark" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M64 8 L120 36 L120 92 L64 120 L8 92 L8 36 Z" fill="#0F2241" stroke="rgba(64,189,248,0.6)" stroke-width="3"/>
+            <rect x="40" y="48" width="48" height="9" rx="4" fill="#40BDF8"/>
+            <rect x="40" y="63" width="32" height="9" rx="4" fill="#F0AB2A"/>
+          </svg>
+          <div>
+            <h1>SafePrompt Guard</h1>
+            <p>Local prompt security for AI workflows.</p>
+          </div>
+        </div>
+        <div class="popup-meta">Active on <strong>gemini.google.com</strong> · v1.0.1</div>
+      </div>
+
+      <div class="popup-grid">
+        <div class="popup-card">
+          <div class="popup-card-eyebrow">Protection</div>
+          <div class="popup-card-title switch-row">
+            Enable scanning
+            <label class="sw">
+              <input type="checkbox" checked />
+              <div class="sw-track"><div class="sw-knob"></div></div>
+            </label>
+          </div>
+        </div>
+        <div class="popup-card">
+          <div class="popup-card-eyebrow">Total detections</div>
+          <div class="metric">12</div>
+        </div>
+      </div>
+
+      <div class="popup-section" style="margin-top:8px;">
+        <div class="popup-section-label">Last warning</div>
+        <div class="popup-section-title">Latest page finding</div>
+        <div class="finding-preview">
+          <div class="fp-row"><span class="fp-badge fp-badge--high">HIGH</span> <span style="font-size:12px; color:#D0D8EC;">Password: AdminAccess2026!</span></div>
+          <div class="fp-row"><span class="fp-badge fp-badge--high">HIGH</span> <span style="font-size:12px; color:#D0D8EC;">Token: wh_a1b2c3…h8</span></div>
+          <div class="fp-row"><span class="fp-badge fp-badge--medium">MED</span> <span style="font-size:12px; color:#D0D8EC;">Internal URL: db.internal.acme.com</span></div>
+          <div class="fp-text" style="margin-top:4px;">Scanned 14 sec ago</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="popup-db-section">
+        <div class="popup-db-header">
+          <div>
+            <div class="db-title">Manual learned values</div>
+            <div class="db-count">8 saved items</div>
+          </div>
+        </div>
+        <div class="db-actions">
+          <button class="db-btn db-btn--cyan">Add manually</button>
+          <button class="db-btn db-btn--ghost">Open DB</button>
+          <button class="db-btn db-btn--danger">Clear all</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

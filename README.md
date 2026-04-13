@@ -1,250 +1,191 @@
-# SafePrompt Guard
+﻿# SafePrompt Guard
 
-SafePrompt Guard is a local Chrome Manifest V3 proof of concept that detects sensitive prompt content before it is sent to supported AI tools.
+<p align="center">
+  <img src="docs/assets/brand/icon-128.png" alt="SafePrompt Guard icon" width="96" />
+</p>
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc">
+    <img alt="Chrome Web Store" src="https://img.shields.io/badge/Chrome_Web_Store-v1.0.1-blue?logo=google-chrome&logoColor=white" />
+  </a>
+  <img alt="Rating" src="https://img.shields.io/badge/Rating-5.0%20%E2%98%85-gold" />
+  <img alt="Manifest" src="https://img.shields.io/badge/Manifest-V3-green" />
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-lightgrey" />
+  <img alt="No backend" src="https://img.shields.io/badge/Backend-None-blueviolet" />
+</p>
+
+<p align="center">
+  <strong>Detect sensitive content before it is sent to AI tools.</strong><br />
+  Local-first. No account. No external upload.
+</p>
+
+<p align="center">
+  <img src="docs/assets/screenshots/warning.png" alt="SafePrompt Guard warning popup" width="800" />
+</p>
+
+---
+
+## Install
+
+### Chrome Web Store (recommended)
+
+[**Install SafePrompt Guard â†’**](https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc)
+
+### Manual (developer mode)
+
+1. Open Chrome â†’ `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked**
+4. Select the `apps/SafePrompt-Guard` folder
+
+---
 
 ## What It Does
 
-- Detects likely passwords, tokens, API keys, JWTs, private keys, connection strings, internal URLs, hosts, and private IPs.
-- Uses a curated local static password source pack for common and default credentials.
-- Applies organization-specific rules from `org_rules.json`.
-- Supports exact-match learned values in a local-only Local DB stored in `chrome.storage.local`.
-- Shows a compact inline warning near the send area instead of a large modal.
-- Supports `Cancel`, `Mask`, `Add manually`, and `Send anyway` in the warning flow.
-- Provides a widened toolbar popup for quick status and masked Local DB review.
-- Provides a full Local DB admin console with add, edit, delete, bulk delete, search, filter, import, and export.
-- Ships with a Chrome Web Store asset package under `assets/store/` and a reusable brand set under `assets/brand/`.
+SafePrompt Guard scans prompt text locally on supported AI tools and flags:
+
+- **Passwords and labeled credentials** â€” `password:`, `pass=`, `secret:`, and common credentials
+- **Tokens and keys** â€” API keys, JWTs, private keys, webhook tokens, connection strings
+- **Internal references** â€” private IPs, internal hostnames, organization-specific values
+- **Common and default passwords** â€” curated offline list checked without any network call
+
+When risky content is detected, a compact inline warning appears near the send button. You can review each finding, mask it, or add it to the Local DB for future detection â€” all without leaving the writing flow.
+
+---
 
 ## Supported Sites
 
-- `chatgpt.com`
-- `chat.openai.com`
-- `claude.ai`
-- `gemini.google.com`
-- `perplexity.ai`
+| Site | Status |
+|------|--------|
+| `chatgpt.com` / `chat.openai.com` | âœ… Supported |
+| `claude.ai` | âœ… Supported |
+| `gemini.google.com` | âœ… Supported |
+| `perplexity.ai` | âœ… Supported |
 
-## Installation
+---
 
-1. Open Chrome and go to `chrome://extensions`.
-2. Enable `Developer mode`.
-3. Click `Load unpacked`.
-4. Select `C:\ChromeExtension\apps\SafePrompt-Guard`.
-5. Reload the extension after changes.
+## How It Works
 
-## Debug Mode
+**01 Â· Scan before send** â€” Prompt text is analyzed locally every time you are about to send. No text leaves your browser to be scanned.
 
-Debug mode is off by default.
+**02 Â· Review findings** â€” A compact inline warning near the send area summarizes what was found with severity (HIGH / MEDIUM / LOW). Each finding shows a masked preview and a per-finding Mask button.
 
-Enable:
+**03 Â· Mask or learn** â€” Mask a specific value immediately (replaces it with `********` or `[MASKED_TOKEN]`), or add it to the Local DB so future prompts are checked against it automatically.
+
+---
+
+## Local DB
+
+Open the extension popup â†’ **Open DB**.
+
+The Local DB console supports:
+
+- Add, edit, delete, bulk delete
+- Search and type filter
+- Sort by newest, oldest, or type
+- Export filtered rows to **JSON** or **CSV**
+- Import JSON or CSV with **Merge** or **Replace all**
+
+All values stay local. They are stored in `chrome.storage.local` and are never uploaded.
+
+---
+
+## Screenshots
+
+| Warning popup | Local DB console |
+|---|---|
+| ![Warning](docs/assets/screenshots/warning.png) | ![Local DB](docs/assets/screenshots/local-db-console.png) |
+
+| Import / Export | Toolbar popup |
+|---|---|
+| ![Import Export](docs/assets/screenshots/import-export.png) | ![Local-first](docs/assets/screenshots/local-first.png) |
+
+---
+
+## org_rules.json
+
+`org_rules.json` provides organization-aware context. Fill in these fields with your team's values:
+
+| Field | Purpose |
+|-------|---------|
+| `customerNames` | Customer names that should not appear in prompts |
+| `projectNames` | Internal project names |
+| `internalCodeNames` | Code names for unreleased products |
+| `productNames` | Product names that are not public |
+| `internalOnlyPhrases` | Exact phrases that are internal-only |
+| `allowlistedTerms` | Values that should never be flagged |
+| `riskyContextWords` | Words that raise severity when combined with org names |
+
+Names alone stay LOW or are skipped. Names combined with actual credentials become HIGH.
+
+---
+
+## Privacy
+
+- No backend, no account system, no external detection APIs
+- No data is sent outside the browser
+- The Local DB is stored only in `chrome.storage.local`
+- [Full Privacy Policy](https://stiliyan-dev.github.io/safeprompt-guard/privacy-policy.html)
+
+---
+
+## Known Limitations
+
+- Send button discovery is heuristic-based and can miss site DOM changes
+- Attachment files (PDFs, images) are not scanned
+- Learned matching is exact and case-sensitive by design
+- The embedded static password pack is intentionally curated, not a full breach corpus
+
+---
+
+## Developer Notes
+
+<details>
+<summary>Debug mode</summary>
+
+Debug mode is off by default. To enable in the browser console:
 
 ```js
 chrome.storage.local.set({ debug: true });
 ```
 
-Disable:
+When on, the content script and service worker log: initialization, editor discovery, detector results, warning rendering, and all user actions.
 
-```js
-chrome.storage.local.set({ debug: false });
-```
+</details>
 
-When debug mode is on, the content script and service worker log:
-
-- initialization
-- supported site detection
-- editor discovery
-- paste/input/send checkpoints
-- detector start and completion
-- findings count
-- warning UI rendering
-- popup/manual-add actions
-- timeout recovery and unexpected errors
-
-## Local DB Console
-
-Open the extension popup, then click `Open DB`.
-
-The full console now supports:
-
-- add
-- edit
-- delete
-- bulk delete
-- search across value and type
-- type filter
-- sort by newest, oldest, or type
-- export filtered rows to JSON
-- export filtered rows to CSV
-- import JSON or CSV with `Merge / upsert exact values` or `Replace all`
-
-Manual learned values remain:
-
-- local only
-- exact-match
-- case-sensitive
-
-## Local Static Password Pack
-
-The extension also ships with a curated local-only baseline in:
-
-- `password-sources.js`
-
-This baseline is intentionally compact and high-confidence. It focuses on:
-
-- common passwords
-- default credential passwords
-- known username/password default pairs
-
-It does not include:
-
-- full breach corpora
-- online breach lookups
-- external API calls
-
-## org_rules.json
-
-`org_rules.json` provides organization-aware context:
-
-- `customerNames`
-- `projectNames`
-- `internalCodeNames`
-- `productNames`
-- `internalOnlyPhrases`
-- `allowlistedTerms`
-- `riskyContextWords`
-
-Expected behavior:
-
-- names alone stay `LOW` or are ignored
-- names plus risky context become `MEDIUM`
-- names plus actual secrets become `HIGH`
-- learned Local DB values match exact substrings using the saved type
-
-## Brand And Store Assets
-
-Brand assets live in:
-
-- `assets/brand/`
-- `assets/brand/icons/`
-
-Chrome Web Store assets live in:
-
-- `assets/store/screenshots/`
-- `assets/store/small-promo-440x280.png`
-- `assets/store/marquee-1400x560.png`
-- `assets/store/video-thumbnail-1280x720.png`
-- `assets/store/STORE_LISTING.md`
-- `assets/store/VIDEO_STORYBOARD.md`
-- `assets/store/RELEASE_CHECKLIST.md`
-
-GitHub Pages site files live in:
-
-- `docs/index.html`
-- `docs/privacy-policy.html`
-- `docs/styles.css`
-
-Planned public URLs:
-
-- `https://stiliyan-dev.github.io/safeprompt-guard/`
-- `https://stiliyan-dev.github.io/safeprompt-guard/privacy-policy.html`
-- `https://github.com/stiliyan-dev/safeprompt-guard/issues`
-
-Repo publish steps live in:
-
-- `GITHUB_PUBLISH.md`
-
-Regenerate the raster assets with:
+<details>
+<summary>Run regression tests</summary>
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guard\assets\generate-brand-assets.ps1
+powershell -ExecutionPolicy Bypass -File apps\SafePrompt-Guard\run-detector-tests.ps1
+powershell -ExecutionPolicy Bypass -File apps\SafePrompt-Guard\post-change-smoke.ps1
 ```
 
-## Sanity Checks
+Additional manual coverage: `TEST_CASES.md`, `MANUAL_TEST_PLAN.md`
 
-Run the detector and learned-store regression harness:
+</details>
 
-```powershell
-powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guard\run-detector-tests.ps1
+<details>
+<summary>Quick manual test prompt</summary>
+
+Paste into a supported AI composer to trigger a detection:
+
 ```
-
-Run the full post-change smoke gate:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File C:\ChromeExtension\apps\SafePrompt-Guard\post-change-smoke.ps1
-```
-
-The smoke gate now checks:
-
-- supported manifest matches, including `chatgpt.com`
-- core ChatGPT interception hooks
-- inline warning markers
-- popup widening and Local DB control row
-- interactive DB files
-- manifest icon set
-- Chrome Web Store asset package presence
-
-Additional manual coverage lives in:
-
-- `TEST_CASES.md`
-- `MANUAL_TEST_PLAN.md`
-
-## Quick Manual Test Flow
-
-Paste this into a supported prompt composer:
-
-```text
 Project: DemoSales
 Customer: Demo Corporation
 Password: admin
-Please rotate Password123 after cutover.
 webhook_token=wh_123456789abcdef
 ```
 
-Expected:
+</details>
 
-1. The inline warning appears before send.
-2. `Mask` replaces only the selected risky value.
-3. `Add manually` opens the inline Local DB form.
-4. The toolbar popup shows the widened one-row Local DB actions.
-5. `Open DB` opens the interactive console.
-6. Saving a value in the console or popup makes later exact matches detectable.
-7. JSON and CSV export use the currently filtered table rows.
+---
 
-## How To Inspect Logs
+## Links
 
-- Service worker logs:
-  Open the extension service worker console from `chrome://extensions`
-- Page logs:
-  Open DevTools on the supported AI site
-- Detector console harness:
-  Run `SafePromptDetector.runConsoleTestHarness()`
+- [Chrome Web Store listing](https://chromewebstore.google.com/detail/safeprompt-guard/lonecdoaidnlogmkfmpkpejjacaklbbc)
+- [Homepage](https://stiliyan-dev.github.io/safeprompt-guard/)
+- [Privacy Policy](https://stiliyan-dev.github.io/safeprompt-guard/privacy-policy.html)
+- [Support / Issues](https://github.com/stiliyan-dev/safeprompt-guard/issues)
 
-## Known Limitations
 
-- Send button discovery remains heuristic-based.
-- Supported site DOM structures can change.
-- This POC scans text only, not file attachments.
-- Learned matching is exact and case-sensitive by design.
-- The embedded static password pack is intentionally curated and not a full breached-password corpus.
-- Rich editors can still need site-specific adapters for perfect selection and framework-state behavior.
-- Unsupported sites show no detection because the content script is not injected there.
-
-## Common Failure Scenarios
-
-- No inline warning:
-  Confirm the page is on a supported domain, the extension is enabled, and `post-change-smoke.ps1` passes.
-- Popup summary looks stale:
-  Refresh the page and trigger a fresh warning.
-- Mask does not visibly update the prompt:
-  Check page logs and confirm the current editor accepts programmatic value changes.
-- Import looks wrong:
-  Confirm the input rows include `value` and `type`, and use one of the supported types.
-- Store assets feel outdated after UI changes:
-  Regenerate them with `assets\generate-brand-assets.ps1`.
-
-## Future Improvements
-
-- Per-site composer adapters
-- richer org-rule editing
-- attachment scanning
-- rule tagging
-- optional online breach-password checks as an explicit opt-in mode
-- sync/export presets for larger Local DB deployments

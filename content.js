@@ -21,13 +21,12 @@
   }
 
   const STYLE_ID = "safe-prompt-guard-styles";
-  const DEBUG_BADGE_ID = "safe-prompt-guard-debug-badge";
   const WARNING_ID = "safe-prompt-guard-warning";
   const NOTICE_ID = "safe-prompt-guard-notice";
   const SELECTION_BUBBLE_ID = "safe-prompt-guard-selection";
   const MANUAL_TRIGGER_ID = "safe-prompt-guard-manual-trigger";
   const INIT_TIMEOUT_MS = 2000;
-  const FLOW_TIMEOUT_MS = 15000;
+  const FLOW_TIMEOUT_MS = 90000;
   const NOTICE_TIMEOUT_MS = 4000;
   const SCAN_DEBOUNCE_MS = 220;
   const MUTATION_DEBOUNCE_MS = 300;
@@ -91,7 +90,7 @@
 
   const state = {
     enabled: true,
-    debug: true,
+    debug: false,
     lastFocusedComposer: null,
     currentComposer: null,
     currentComposerSnapshot: null,
@@ -108,11 +107,9 @@
     noticeTimeoutId: 0,
     scanDebounceId: 0,
     mutationDebounceId: 0,
+    flashTimeoutId: 0,
     observer: null,
-    badgeLoaded: false,
     editorFound: false,
-    findingsCount: 0,
-    scanning: "Idle",
     activeFindingIndex: -1,
     warningPosition: null,
     warningDrag: null,
@@ -150,9 +147,6 @@
     } catch (error) {
       handleUnexpectedError("learned secret preload failed", error);
     }
-
-    ensureDebugBadge();
-    updateDebugBadge({ loaded: true, scanning: "Idle", findingsCount: 0 });
 
     log("content script loaded", { host: location.hostname });
     log("supported site detected", { host: location.hostname });
@@ -225,7 +219,7 @@
       sendResponse({
         ok: true,
         version: chrome.runtime.getManifest().version,
-        warningActions: ["cancel", "mask", "manual-open", "send"],
+        warningActions: ["cancel", "mask-all", "manual-open", "send"],
         popupVisible: Boolean(state.popupVisible),
         findingsCount: Array.isArray(state.currentActionable) ? state.currentActionable.length : 0
       });
@@ -242,7 +236,6 @@
     }
     state.lastFocusedComposer = composer;
     state.editorFound = true;
-    updateDebugBadge({ editorFound: true });
     scheduleSelectionCandidateUpdate();
     log("editor found", { tag: composer.tagName.toLowerCase(), host: location.hostname });
   }
@@ -268,7 +261,6 @@
 
     state.lastFocusedComposer = composer;
     state.editorFound = true;
-    updateDebugBadge({ editorFound: true });
     scheduleSelectionCandidateUpdate();
     log("input change detected", { length: readComposerText(composer).length });
     scheduleInlineScan(composer, "input");
@@ -286,7 +278,6 @@
 
     state.lastFocusedComposer = composer;
     state.editorFound = true;
-    updateDebugBadge({ editorFound: true });
     scheduleSelectionCandidateUpdate();
     log("paste detected", { tag: composer.tagName.toLowerCase() });
     window.setTimeout(() => {
@@ -496,10 +487,6 @@
     if (editorFound) {
       state.lastFocusedComposer = composer;
       const sendButton = findSendButton(composer);
-      updateDebugBadge({
-        editorFound: true,
-        findingsCount: state.findingsCount
-      });
       log("editor found", {
         reason,
         tag: composer.tagName.toLowerCase(),
@@ -514,7 +501,6 @@
       }
     } else {
       state.selectionCandidate = null;
-      updateDebugBadge({ editorFound: false });
     }
 
     state.editorFound = editorFound;
@@ -529,8 +515,6 @@
     if (state.scanDebounceId) {
       window.clearTimeout(state.scanDebounceId);
     }
-
-    updateDebugBadge({ scanning: "Queued" });
     state.scanDebounceId = window.setTimeout(() => {
       state.scanDebounceId = 0;
       performInlineScan(composer, reason);
@@ -539,14 +523,10 @@
 
   function performInlineScan(composer, reason) {
     if (!state.enabled || !isComposerUsable(composer)) {
-      updateDebugBadge({ scanning: "Idle", editorFound: false });
       return;
     }
-
-    updateDebugBadge({ scanning: "Scanning", editorFound: true });
     const detection = runDetection(composer, reason);
     state.findingsCount = detection.actionable.length;
-    updateDebugBadge({ scanning: "Idle", findingsCount: detection.actionable.length });
 
     if (!detection.actionable.length) {
       if (state.popupVisible && state.currentAction == null && composer === state.currentComposer) {
@@ -671,10 +651,18 @@
 
     const actions = document.createElement("div");
     actions.className = "spg-warning__actions";
-    actions.appendChild(buildButton("Cancel", "cancel"));
-    actions.appendChild(buildButton("Mask", "mask"));
-    actions.appendChild(buildButton("Add manually", "manual-open"));
-    actions.appendChild(buildButton("Send anyway", "send"));
+
+    const primaryRow = document.createElement("div");
+    primaryRow.className = "spg-warning__actions-primary";
+    primaryRow.appendChild(buildButton("Mask all", "mask-all"));
+
+    const secondaryRow = document.createElement("div");
+    secondaryRow.className = "spg-warning__actions-secondary";
+    secondaryRow.appendChild(buildButton("Cancel", "cancel"));
+    secondaryRow.appendChild(buildButton("Add manually", "manual-open"));
+    secondaryRow.appendChild(buildButton("Send anyway", "send"));
+
+    actions.replaceChildren(primaryRow, secondaryRow);
 
     warning.replaceChildren(header, summary, details, actions);
     if (state.manualEntryOpen) {
@@ -686,7 +674,6 @@
       placeFloatingBox(warning, state.currentAnchor || state.currentComposer);
     }
     updateFindingRowSelection();
-    updateDebugBadge({ findingsCount: actionable.length });
     log("warning UI rendered", { findingsCount: actionable.length });
   }
 
@@ -742,19 +729,11 @@
       state.actionBusy = true;
       setActionButtonsDisabled(true);
 
-      if (action === "mask") {
-        const selectedFinding = state.currentActionable[state.activeFindingIndex] || null;
-        if (!selectedFinding) {
-          showNotice("Select a finding first to mask only that value.", "warning", state.currentAnchor || state.currentComposer);
-          state.actionBusy = false;
-          setActionButtonsDisabled(false);
-          return;
-        }
-
+      if (action === "mask-all") {
         applySanitization("mask", {
-          findings: [selectedFinding],
-          remainingNotice: "Masked the selected finding. Remaining findings still need review.",
-          clearedNotice: "Masked the selected finding. No remaining findings."
+          findings: state.currentActionable,
+          remainingNotice: "Masked all findings.",
+          clearedNotice: "Masked all findings. Text is clean."
         });
         return;
       }
@@ -813,6 +792,10 @@
       return;
     }
 
+    if (findings.length === 1) {
+      flashMaskedPosition(composer, findings[0], nextText);
+    }
+
     refreshAfterSanitization(mode, composer, options);
     log(`${mode} applied`, { characters: nextText.length, findingsTouched: findings.length });
   }
@@ -855,13 +838,16 @@
     state.currentAction = null;
     state.currentAnchor = null;
     state.selectionCandidate = null;
+    if (state.flashTimeoutId) {
+      window.clearTimeout(state.flashTimeoutId);
+      state.flashTimeoutId = 0;
+    }
     if (!options.preserveComposer) {
       state.currentComposer = null;
     }
     if (options.clearReport !== false) {
       reportPageState([]);
     }
-    updateDebugBadge({ scanning: "Idle", findingsCount: 0 });
     log("state reset", { reason });
   }
 
@@ -915,42 +901,6 @@
     });
   }
 
-  function ensureDebugBadge() {
-    let badge = document.getElementById(DEBUG_BADGE_ID);
-    if (badge) {
-      return badge;
-    }
-
-    badge = document.createElement("aside");
-    badge.id = DEBUG_BADGE_ID;
-    badge.className = "spg-debug-badge";
-    document.body.appendChild(badge);
-    return badge;
-  }
-
-  function updateDebugBadge(updates = {}) {
-    const badge = ensureDebugBadge();
-    if ("loaded" in updates) {
-      state.badgeLoaded = Boolean(updates.loaded);
-    }
-    if ("editorFound" in updates) {
-      state.editorFound = Boolean(updates.editorFound);
-    }
-    if ("scanning" in updates) {
-      state.scanning = String(updates.scanning);
-    }
-    if ("findingsCount" in updates) {
-      state.findingsCount = Number(updates.findingsCount || 0);
-    }
-
-    badge.textContent = [
-      `Loaded: ${state.badgeLoaded ? "Yes" : "No"}`,
-      `Editor: ${state.editorFound ? "Found" : "Missing"}`,
-      `Scanning: ${state.scanning}`,
-      `Findings: ${state.findingsCount}`
-    ].join("\n");
-  }
-
   function buildButton(label, action) {
     const button = document.createElement("button");
     button.type = "button";
@@ -964,28 +914,27 @@
     const item = document.createElement("div");
     item.className = `spg-warning__item${isActive ? " is-active" : ""}`;
     item.dataset.findingIndex = String(index);
-    item.setAttribute("title", "Click to highlight this finding in the prompt");
+    item.setAttribute("title", "Click to select this finding");
 
+    const badge = document.createElement("span");
+    badge.className = `spg-severity-badge spg-severity-badge--${(finding.severity || "medium").toLowerCase()}`;
+    badge.textContent = (finding.severity || "MEDIUM").toUpperCase();
+
+    const info = document.createElement("div");
+    info.className = "spg-warning__itemInfo";
     const title = buildElement("div", "spg-warning__itemTitle", `${finding.type}: ${finding.preview}`);
-    const replacement = buildElement("div", "spg-warning__itemMeta", `Mask: ${finding.mask || finding.replacement || "[MASKED]"}`);
-    const controls = document.createElement("div");
-    controls.className = "spg-warning__itemControls";
-    controls.appendChild(buildMiniButton("Mask this", "mask-one", index));
+    const meta = buildElement("div", "spg-warning__itemMeta", `→ ${finding.mask || finding.replacement || "[MASKED]"}`);
+    info.replaceChildren(title, meta);
 
-    item.replaceChildren(title, replacement, controls);
+    const maskBtn = document.createElement("button");
+    maskBtn.type = "button";
+    maskBtn.className = "spg-button spg-button--mask-one";
+    maskBtn.dataset.action = "mask-one";
+    maskBtn.dataset.findingIndex = String(index);
+    maskBtn.textContent = "Mask";
+
+    item.replaceChildren(badge, info, maskBtn);
     return item;
-  }
-
-  function buildMiniButton(label, action, findingIndex) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "spg-miniButton";
-    button.dataset.action = action;
-    if (Number.isInteger(findingIndex)) {
-      button.dataset.findingIndex = String(findingIndex);
-    }
-    button.textContent = label;
-    return button;
   }
 
   function buildElement(tagName, className, text) {
@@ -1888,7 +1837,6 @@
       node.id === NOTICE_ID ||
       node.id === SELECTION_BUBBLE_ID ||
       node.id === MANUAL_TRIGGER_ID ||
-      node.id === DEBUG_BADGE_ID ||
       node.tagName === "SCRIPT" ||
       node.tagName === "STYLE"
     );
@@ -2073,6 +2021,55 @@
       return false;
     }
     return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  }
+
+  function flashMaskedPosition(composer, finding, maskedText) {
+    if (!isComposerUsable(composer) || !finding) {
+      return;
+    }
+
+    // Clear any previous flash timer
+    if (state.flashTimeoutId) {
+      window.clearTimeout(state.flashTimeoutId);
+      state.flashTimeoutId = 0;
+    }
+
+    const maskValue = String(finding.mask || finding.replacement || "");
+    if (!maskValue) {
+      return;
+    }
+
+    const start = Number(finding.start);
+    if (!Number.isInteger(start) || start < 0) {
+      return;
+    }
+
+    const end = Math.min(start + maskValue.length, maskedText.length);
+
+    composer.focus?.();
+
+    if (composer instanceof HTMLTextAreaElement || composer instanceof HTMLInputElement) {
+      try {
+        composer.setSelectionRange(start, end, "forward");
+        ensureSelectionVisible(composer, start);
+      } catch (_) {}
+    } else {
+      const snapshot = createComposerSnapshot(composer, { includeBoundaries: true });
+      selectEditableRange(composer, start, end, snapshot);
+    }
+
+    // Clear the selection after 2s so the user isn't left with a stray selection
+    state.flashTimeoutId = window.setTimeout(() => {
+      state.flashTimeoutId = 0;
+      try {
+        if (composer instanceof HTMLTextAreaElement || composer instanceof HTMLInputElement) {
+          composer.setSelectionRange(end, end);
+        } else {
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+        }
+      } catch (_) {}
+    }, 2000);
   }
 
   function refreshAfterSanitization(mode, composer, options = {}) {

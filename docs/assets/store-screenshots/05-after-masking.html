@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--
+  Chrome Web Store screenshot template 5/5
+  Shows: After masking — prompt text now shows [MASKED_TOKEN] and ******** with a success notice
+  Size: Open in Chrome at 1280×800, zoom 100%, then screenshot
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>SafePrompt Guard — After masking</title>
+  <style>
+    html { background: #212121; overflow: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #212121;
+    }
+
+    /* ── Browser chrome ──────────────────────────────── */
+    .browser { width: 1280px; height: 800px; display: flex; flex-direction: column; background: #191919; }
+    .browser-bar {
+      flex-shrink: 0; height: 52px;
+      background: #2A2A2A;
+      display: flex; align-items: center; gap: 10px; padding: 0 14px;
+      border-bottom: 1px solid #111;
+    }
+    .tl-dots { display: flex; gap: 7px; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .tl-dot--r { background: #FF5F57; }
+    .tl-dot--y { background: #FFBD2E; }
+    .tl-dot--g { background: #28C840; }
+    .tab {
+      display: flex; align-items: center; gap: 6px;
+      height: 32px; padding: 0 14px;
+      background: #1E1E1E; border-radius: 8px 8px 0 0;
+      font-size: 12px; color: #D0D0D0; white-space: nowrap; min-width: 168px;
+    }
+    .urlbar {
+      flex: 1; height: 28px; max-width: 420px;
+      background: #1A1A1A; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px; font-size: 12px; color: #888;
+    }
+    .lock { color: #4ADE80; font-size: 11px; }
+    .browser-content {
+      flex: 1; display: flex; overflow: hidden; position: relative;
+    }
+
+    /* ── ChatGPT sidebar ─────────────────────────────── */
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: #171717;
+      display: flex; flex-direction: column;
+      padding: 14px 10px; gap: 12px;
+      border-right: 1px solid #2A2A2A;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 6px 8px; font-size: 15px; font-weight: 600; color: #ECECEC; }
+    .new-chat-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 8px 12px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; font-size: 13px; color: #ECECEC;
+    }
+    .sidebar-section { font-size: 11px; color: #666; padding: 4px 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .sidebar-item { display: flex; align-items: center; padding: 7px 10px; border-radius: 7px; font-size: 13px; color: #BEBEBE; }
+    .sidebar-item--active { background: rgba(255,255,255,0.08); color: #ECECEC; }
+
+    /* ── Chat main ───────────────────────────────────── */
+    .chat-main {
+      flex: 1; background: #212121;
+      display: flex; flex-direction: column; position: relative;
+    }
+    .chat-header {
+      height: 52px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; border-bottom: 1px solid #2A2A2A;
+    }
+    .model-badge { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #ECECEC; }
+    .model-dot { width: 8px; height: 8px; border-radius: 50%; background: #19C37D; }
+    .chat-messages {
+      flex: 1; padding: 24px 80px;
+      display: flex; flex-direction: column; gap: 20px; overflow: hidden;
+    }
+    .msg { display: flex; gap: 14px; line-height: 1.6; font-size: 14.5px; }
+    .msg--ai .msg-avatar {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: #19C37D; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white; font-weight: 700;
+    }
+    .msg--user { justify-content: flex-end; }
+    .msg--user .msg-bubble {
+      max-width: 600px;
+      background: #2F2F2F; border-radius: 18px 18px 4px 18px;
+      padding: 12px 16px; color: #ECECEC;
+    }
+    .msg--ai .msg-body { color: #DEDEDE; max-width: 640px; }
+    .masked { color: #6EE7B7; font-family: monospace; font-size: 13px; font-weight: 700; }
+    .masked-token { color: #93C5FD; font-family: monospace; font-size: 13px; font-weight: 700; }
+    .masked-host { color: #C4B5FD; font-family: monospace; font-size: 13px; font-weight: 700; }
+
+    /* ── Composer ────────────────────────────────────── */
+    .composer-area { padding: 10px 80px 18px; }
+    .composer-box {
+      border: 1px solid #444; border-radius: 16px;
+      background: #2F2F2F; padding: 14px 16px; position: relative;
+    }
+    .composer-text { font-size: 14px; color: #D0D0D0; line-height: 1.6; }
+    .composer-footer {
+      display: flex; justify-content: space-between; align-items: center; margin-top: 10px;
+    }
+    .send-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #19C37D;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 14px; font-weight: 700;
+    }
+    .composer-tools { display: flex; gap: 8px; }
+    .composer-tool-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      color: #9CA3AF; font-size: 13px;
+    }
+
+    /* ── Success notice ──────────────────────────────── */
+    .spg-notice {
+      position: absolute;
+      bottom: 96px;
+      right: 80px;
+      width: 260px;
+      padding: 11px 14px;
+      border: 1px solid rgba(74,222,128,0.5);
+      border-radius: 14px;
+      background: rgba(10,21,39,0.98);
+      color: #E2E8F0;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      font-family: "Segoe UI", sans-serif;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .notice-icon { font-size: 18px; }
+    .notice-text { font-size: 12px; line-height: 1.45; }
+    .notice-text strong { color: #4ADE80; }
+    .notice-dismiss { margin-left: auto; font-size: 12px; font-weight: 700; color: #475569; }
+
+    /* ── Highlight callout (annotation) ─────────────── */
+    .callout {
+      position: absolute;
+      bottom: 178px;
+      right: 350px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(6,14,27,0.9);
+      border: 1.5px solid rgba(110,231,183,0.45);
+      border-radius: 8px; padding: 6px 12px;
+      font-size: 12px; color: #6EE7B7; white-space: nowrap;
+      pointer-events: none;
+    }
+    .callout::after {
+      content: "";
+      position: absolute;
+      right: -10px; top: 50%; transform: translateY(-50%);
+      border: 6px solid transparent;
+      border-left-color: rgba(110,231,183,0.45);
+    }
+  </style>
+</head>
+<body>
+<div class="browser">
+  <div class="browser-bar">
+    <div class="tl-dots">
+      <div class="tl-dot tl-dot--r"></div>
+      <div class="tl-dot tl-dot--y"></div>
+      <div class="tl-dot tl-dot--g"></div>
+    </div>
+    <div class="tab">
+      <svg style="width:14px;height:14px;" viewBox="0 0 41 41" fill="none">
+        <path d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835A9.964 9.964 0 0 0 18.306.5a10.079 10.079 0 0 0-9.614 6.977 9.967 9.967 0 0 0-6.664 4.834 10.08 10.08 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 7.516 3.35 10.078 10.078 0 0 0 9.617-6.981 9.967 9.967 0 0 0 6.663-4.834 10.079 10.079 0 0 0-1.243-11.813z" fill="#19C37D"/>
+      </svg>
+      ChatGPT
+    </div>
+    <div class="urlbar">
+      <span class="lock">🔒</span>
+      chatgpt.com
+    </div>
+  </div>
+
+  <div class="browser-content">
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <svg style="width:24px;height:24px;" viewBox="0 0 41 41" fill="none">
+          <path d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835A9.964 9.964 0 0 0 18.306.5a10.079 10.079 0 0 0-9.614 6.977 9.967 9.967 0 0 0-6.664 4.834 10.08 10.08 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 7.516 3.35 10.078 10.078 0 0 0 9.617-6.981 9.967 9.967 0 0 0 6.663-4.834 10.079 10.079 0 0 0-1.243-11.813z" fill="#19C37D"/>
+        </svg>
+        ChatGPT
+      </div>
+      <div class="new-chat-btn">+ New chat</div>
+      <div class="sidebar-section">Today</div>
+      <div class="sidebar-item sidebar-item--active">DB migration support handover</div>
+      <div class="sidebar-item">API integration notes</div>
+      <div class="sidebar-section">Yesterday</div>
+      <div class="sidebar-item">Infrastructure audit Q2</div>
+    </div>
+
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="model-badge">
+          <div class="model-dot"></div>
+          GPT-4o
+        </div>
+      </div>
+      <div class="chat-messages">
+        <div class="msg msg--ai">
+          <div class="msg-avatar">G</div>
+          <div class="msg-body">Sure, I can help with the database migration handover. Please share the connection details and I'll summarize the steps.</div>
+        </div>
+      </div>
+      <div class="composer-area">
+        <div class="composer-box">
+          <div class="composer-text">
+            Migrate the customer DB to the new host. Connect via
+            <span class="masked-host">[INTERNAL_HOST]</span>
+            using Password:
+            <span class="masked">****************</span>
+            and token
+            <span class="masked-token">[MASKED_TOKEN]</span>
+          </div>
+          <div class="composer-footer">
+            <div class="composer-tools">
+              <div class="composer-tool-btn">📎</div>
+              <div class="composer-tool-btn">🌐</div>
+            </div>
+            <div class="send-btn">↑</div>
+          </div>
+        </div>
+
+        <!-- Callout annotation -->
+        <div class="callout">Credentials replaced — safe to send</div>
+
+        <!-- Success notice -->
+        <div class="spg-notice">
+          <div class="notice-icon">✓</div>
+          <div class="notice-text">
+            <strong>3 values masked</strong><br />
+            Credentials replaced in your prompt.
+          </div>
+          <div class="notice-dismiss">✕</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

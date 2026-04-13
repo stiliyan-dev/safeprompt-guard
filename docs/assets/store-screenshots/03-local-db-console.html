@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<!--
+  Chrome Web Store screenshot template 3/5
+  Shows: Local DB Console
+  Size: Open in Chrome at 1280×800, zoom 100%, then screenshot
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1280" />
+  <title>SafePrompt Guard — Local DB Console</title>
+  <style>
+    html { background: #0D1117; overflow: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0D1117;
+      color: #E6EDF3;
+    }
+
+    /* ── Browser chrome ──────────────────────────────── */
+    .browser { width: 1280px; height: 800px; display: flex; flex-direction: column; }
+    .browser-bar {
+      flex-shrink: 0; height: 52px;
+      background: #161B22;
+      display: flex; align-items: center; gap: 10px; padding: 0 14px;
+      border-bottom: 1px solid #21262D;
+    }
+    .tl-dots { display: flex; gap: 7px; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .tl-dot--r { background: #FF5F57; }
+    .tl-dot--y { background: #FFBD2E; }
+    .tl-dot--g { background: #28C840; }
+    .tab {
+      display: flex; align-items: center; gap: 6px;
+      height: 32px; padding: 0 14px;
+      background: #0D1117; border-radius: 8px 8px 0 0;
+      font-size: 12px; color: #E6EDF3; white-space: nowrap; min-width: 220px;
+    }
+    .urlbar {
+      flex: 1; height: 28px; max-width: 440px;
+      background: #161B22; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px; font-size: 12px; color: #768390;
+    }
+    .lock { color: #3FB950; font-size: 11px; }
+    .browser-content {
+      flex: 1; overflow: hidden; position: relative;
+      background: #0D1117;
+    }
+
+    /* ── DB Console layout ───────────────────────────── */
+    .console-shell {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      background: #0D1117;
+    }
+    .console-header {
+      padding: 18px 28px 14px;
+      border-bottom: 1px solid #21262D;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .console-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .brand-icon {
+      width: 30px; height: 30px;
+    }
+    .brand-name { font-size: 15px; font-weight: 700; color: #E6EDF3; }
+    .console-title { font-size: 13px; color: #768390; margin-top: 2px; }
+    .console-main {
+      flex: 1; padding: 18px 28px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .toolbar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .search-input {
+      height: 34px; padding: 0 12px;
+      background: #161B22; border: 1px solid #30363D;
+      border-radius: 8px; color: #E6EDF3; font-size: 13px; min-width: 220px;
+    }
+    .search-input::placeholder { color: #484F58; }
+    .filter-select {
+      height: 34px; padding: 0 10px;
+      background: #161B22; border: 1px solid #30363D;
+      border-radius: 8px; color: #E6EDF3; font-size: 13px;
+    }
+    .spacer { flex: 1; }
+    .btn {
+      height: 34px; padding: 0 14px;
+      border-radius: 8px; font-size: 13px; font-weight: 600;
+      border: 1px solid transparent; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn--add { background: #238636; border-color: #2EA043; color: #fff; }
+    .btn--import { background: #1F6FEB; border-color: #388BFD; color: #fff; }
+    .btn--export { background: #161B22; border-color: #30363D; color: #C9D1D9; }
+    .btn--delete { background: rgba(248,81,73,0.12); border-color: rgba(248,81,73,0.4); color: #F85149; }
+    .table-wrap {
+      flex: 1; overflow: auto;
+      border: 1px solid #21262D; border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { position: sticky; top: 0; z-index: 1; background: #161B22; }
+    th {
+      padding: 10px 14px; text-align: left;
+      color: #8B949E; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+      border-bottom: 1px solid #21262D;
+    }
+    th.check { width: 36px; }
+    td { padding: 11px 14px; border-bottom: 1px solid #161B22; color: #C9D1D9; vertical-align: middle; }
+    tr:last-child td { border-bottom: 0; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+    .type-badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+    .type-password { background: rgba(248,81,73,0.15); color: #FF7B72; border: 1px solid rgba(248,81,73,0.25); }
+    .type-token { background: rgba(63,185,80,0.12); color: #56D364; border: 1px solid rgba(63,185,80,0.25); }
+    .type-api_key { background: rgba(31,111,235,0.14); color: #79C0FF; border: 1px solid rgba(31,111,235,0.3); }
+    .type-secret { background: rgba(210,153,34,0.14); color: #E3B341; border: 1px solid rgba(210,153,34,0.28); }
+    .type-internal { background: rgba(139,92,246,0.14); color: #D2A8FF; border: 1px solid rgba(139,92,246,0.28); }
+    .mono { font-family: 'Consolas', monospace; font-size: 12px; color: #A8D8FF; }
+    .date { color: #484F58; font-size: 12px; }
+    .row-actions { display: flex; gap: 6px; }
+    .mini-btn {
+      height: 26px; padding: 0 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      background: #161B22; border: 1px solid #30363D; color: #8B949E; cursor: pointer;
+    }
+    .mini-btn--del { color: #F85149; border-color: rgba(248,81,73,0.3); }
+    .chk { width: 14px; height: 14px; accent-color: #1F6FEB; }
+    .footer-row {
+      padding: 10px 28px; border-top: 1px solid #21262D;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: #484F58;
+    }
+    .page-count { display: flex; gap: 6px; }
+    .page-btn {
+      height: 26px; padding: 0 10px; border-radius: 6px; font-size: 11px;
+      background: #161B22; border: 1px solid #30363D; color: #8B949E;
+    }
+    .page-btn--active { background: #1F6FEB; border-color: #388BFD; color: white; }
+  </style>
+</head>
+<body>
+<div class="browser">
+  <div class="browser-bar">
+    <div class="tl-dots">
+      <div class="tl-dot tl-dot--r"></div>
+      <div class="tl-dot tl-dot--y"></div>
+      <div class="tl-dot tl-dot--g"></div>
+    </div>
+    <div class="tab">
+      🛡 SafePrompt Guard — Local DB Console
+    </div>
+    <div class="urlbar">
+      <span class="lock">🔒</span>
+      chrome-extension://lonec…/db.html
+    </div>
+  </div>
+
+  <div class="browser-content">
+    <div class="console-shell">
+      <div class="console-header">
+        <div class="console-brand">
+          <svg class="brand-icon" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M64 8 L120 36 L120 92 L64 120 L8 92 L8 36 Z" fill="#0F2241" stroke="rgba(64,189,248,0.6)" stroke-width="3"/>
+            <path d="M64 22 L106 44 L106 84 L64 106 L22 84 L22 44 Z" fill="rgba(64,189,248,0.1)" stroke="rgba(64,189,248,0.4)" stroke-width="2"/>
+            <rect x="42" y="50" width="44" height="8" rx="4" fill="#40BDF8"/>
+            <rect x="42" y="64" width="28" height="8" rx="4" fill="#F0AB2A"/>
+          </svg>
+          <div>
+            <div class="brand-name">SafePrompt Guard</div>
+            <div class="console-title">Local DB Console · 8 learned values</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="console-main">
+        <div class="toolbar">
+          <input class="search-input" type="text" placeholder="Search by value or type…" value=""/>
+          <select class="filter-select">
+            <option>All types</option>
+            <option>Password</option>
+            <option>Token</option>
+          </select>
+          <select class="filter-select">
+            <option>Newest first</option>
+            <option>Oldest first</option>
+          </select>
+          <div class="spacer"></div>
+          <button class="btn btn--add">+ Add</button>
+          <button class="btn btn--import">Import</button>
+          <button class="btn btn--export">Export</button>
+          <button class="btn btn--delete">Delete selected</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="check"><input class="chk" type="checkbox" /></th>
+                <th>Type</th>
+                <th>Raw value</th>
+                <th>Added</th>
+                <th>Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-password">Password</span></td>
+                <td class="mono">AdminAccess2026!</td>
+                <td class="date">Apr 13, 2026</td>
+                <td class="date">Apr 13, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-token">Token</span></td>
+                <td class="mono">wh_a1b2c3d4e5f6g7h8</td>
+                <td class="date">Apr 13, 2026</td>
+                <td class="date">Apr 13, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-api_key">API key</span></td>
+                <td class="mono">sk-prod-x9KmN2vTqR8LwZ4y7</td>
+                <td class="date">Apr 12, 2026</td>
+                <td class="date">Apr 12, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-secret">Secret</span></td>
+                <td class="mono">jwt_secret_prod_2026</td>
+                <td class="date">Apr 11, 2026</td>
+                <td class="date">Apr 11, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-password">Password</span></td>
+                <td class="mono">Service2026!</td>
+                <td class="date">Apr 11, 2026</td>
+                <td class="date">Apr 11, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-internal">Internal ref</span></td>
+                <td class="mono">dashboard.internal.corp</td>
+                <td class="date">Apr 10, 2026</td>
+                <td class="date">Apr 10, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-token">Token</span></td>
+                <td class="mono">ghp_PAT_privateRepo2026</td>
+                <td class="date">Apr 9, 2026</td>
+                <td class="date">Apr 9, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><input class="chk" type="checkbox" /></td>
+                <td><span class="type-badge type-api_key">API key</span></td>
+                <td class="mono">AKIAIOSFODNN7EXAMPLE</td>
+                <td class="date">Apr 8, 2026</td>
+                <td class="date">Apr 8, 2026</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="mini-btn">Edit</button>
+                    <button class="mini-btn mini-btn--del">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-row">
+        <div>Showing 8 of 8 entries</div>
+        <div class="page-count">
+          <button class="page-btn">← Prev</button>
+          <button class="page-btn page-btn--active">1</button>
+          <button class="page-btn">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

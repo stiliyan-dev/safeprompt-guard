@@ -55,7 +55,10 @@ async function loadState() {
     };
 
   const manifest = chrome.runtime.getManifest();
-  buildMeta.textContent = `Version ${manifest.version} | chatgpt.com enabled`;
+  const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true }).catch(() => []);
+  const activeTab = Array.isArray(tabs) ? tabs[0] : null;
+  const activeHost = activeTab?.url ? (() => { try { return new URL(activeTab.url).hostname.replace(/^www\./, ""); } catch { return null; } })() : null;
+  buildMeta.textContent = `Version ${manifest.version}${activeHost ? ` | ${activeHost}` : ""}`;
 
   enabledToggle.checked = Boolean(state.enabled);
   totalDetections.textContent = String(state.totalDetections || 0);
@@ -66,25 +69,33 @@ async function loadState() {
     return;
   }
 
-  const findingsMarkup = state.lastDetection.findings
-    .slice(0, 2)
+  const findingsHtml = state.lastDetection.findings
     .map(
-      (finding) => `
-        <div class="finding">
-          <strong>${escapeHtml(finding.type)}</strong>
-          <div>${escapeHtml(finding.preview)}</div>
-          <div class="subtle">${escapeHtml(finding.reason || "")}</div>
-        </div>
-      `
+      (finding) => {
+        const sev = (finding.severity || "MEDIUM").toUpperCase();
+        const sevClass = sev === "HIGH" ? "high" : sev === "MEDIUM" ? "medium" : "low";
+        return `
+          <div class="finding">
+            <div class="finding__header">
+              <span class="finding__badge finding__badge--${sevClass}">${escapeHtml(sev)}</span>
+              <strong class="finding__type">${escapeHtml(finding.type)}</strong>
+            </div>
+            <div class="finding__preview">${escapeHtml(finding.preview)}</div>
+            <div class="finding__reason subtle">${escapeHtml(finding.reason || "")}</div>
+          </div>
+        `;
+      }
     )
     .join("");
 
   lastDetection.innerHTML = `
-    <div><span class="severity">${escapeHtml(state.lastDetection.highestSeverity || "HIGH")}</span></div>
-    <div style="margin-top: 8px;">${escapeHtml(state.lastDetection.summary || "Possible secret detected")}</div>
-    <div style="margin-top: 6px;">${escapeHtml(state.lastDetection.site || "unknown")}</div>
-    <div style="margin-top: 4px;">${new Date(state.lastDetection.detectedAt).toLocaleString()}</div>
-    ${findingsMarkup}
+    <div class="detectionMeta">
+      <span class="severity">${escapeHtml(state.lastDetection.highestSeverity || "HIGH")}</span>
+      <span class="detectionSite">${escapeHtml(state.lastDetection.site || "")}</span>
+      <span class="detectionTime">${new Date(state.lastDetection.detectedAt).toLocaleString()}</span>
+    </div>
+    <div class="detectionSummary">${escapeHtml(state.lastDetection.summary || "Possible secret detected")}</div>
+    <div class="findingsList">${findingsHtml}</div>
   `;
 }
 

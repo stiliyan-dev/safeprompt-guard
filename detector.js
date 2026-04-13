@@ -298,7 +298,7 @@
   }
 
   function addAssignments(findings, text) {
-    const pattern = /\b([A-Za-z][A-Za-z0-9._-]{0,63}(?:password|passwd|pwd|token|apikey|api[_ -]?key|secret)[A-Za-z0-9._-]{0,63})\b\s*(?::|=)\s*([^\s"'`,;]{4,})/gi;
+    const pattern = /\b([A-Za-z][A-Za-z0-9._-]{0,63}(?:password|passwd|pwd|passcode|cred(?:ential)?|token|apikey|api[_ -]?key|secret)[A-Za-z0-9._-]{0,63})\b\s*(?::|=)\s*([^\s"'`,;]{4,})/gi;
     let match;
     while ((match = pattern.exec(text)) !== null) {
       const value = match[2];
@@ -333,7 +333,7 @@
   }
 
   function addLabeledCredentialCandidates(findings, text) {
-    const pattern = /(^|[\n\r;])\s*((?:user(?:name)?|login(?: name)?|account(?: name)?|db user|db username|user id|vpn user)|(?:password|passwd|pwd))\s*[:=]\s*([^;\n\r]{1,200})/gim;
+    const pattern = /(^|[\n\r;])\s*((?:user(?:name)?|login(?: name)?|account(?: name)?|db user|db username|user id|vpn user)|(?:password|passwd|pwd|passcode|cred(?:ential)?|credentials))\s*[:=]\s*([^;\n\r]{1,200})/gim;
     let match;
     while ((match = pattern.exec(text)) !== null) {
       const rawValue = trimStructuredValue(match[3]);
@@ -344,7 +344,7 @@
       const start = match.index + match[0].lastIndexOf(rawValue);
       const end = start + rawValue.length;
       const labelNorm = normalizeLabel(match[2]);
-      const isPasswordField = /\b(password|passwd|pwd)\b/.test(labelNorm);
+      const isPasswordField = /\b(password|passwd|pwd|passcode|credential|credentials)\b/.test(labelNorm);
 
       addSecret(findings, {
         start,
@@ -441,7 +441,7 @@
       });
     };
 
-    const assignmentPattern = /\b([A-Za-z][A-Za-z0-9._-]{0,63}(?:password|passwd|pwd)[A-Za-z0-9._-]{0,63})\b\s*(?::|=)\s*([^\s"'`,;]{1,128})/gi;
+    const assignmentPattern = /\b([A-Za-z][A-Za-z0-9._-]{0,63}(?:password|passwd|pwd|passcode|cred(?:ential)?)[A-Za-z0-9._-]{0,63})\b\s*(?::|=)\s*([^\s"'`,;]{1,128})/gi;
     let match;
     while ((match = assignmentPattern.exec(text)) !== null) {
       const value = trimStructuredValue(match[2]);
@@ -449,7 +449,7 @@
       addCandidate(start, value, true);
     }
 
-    const labeledPattern = /(^|[\n\r;])\s*((?:password|passwd|pwd))\s*[:=]\s*([^;\n\r]{1,200})/gim;
+    const labeledPattern = /(^|[\n\r;])\s*((?:password|passwd|pwd|passcode|credential|credentials))\s*[:=]\s*([^;\n\r]{1,200})/gim;
     while ((match = labeledPattern.exec(text)) !== null) {
       const value = trimStructuredValue(match[3]);
       const start = match.index + match[0].lastIndexOf(value);
@@ -755,7 +755,7 @@
     if (/access key|api key|key id/.test(labelNorm)) {
       return { type: "API key", reason: "Access key field", severity: HIGH, layer: "pattern", replacementKey: "api_key", trustedContext: true };
     }
-    if (/\b(password|passwd|pwd)\b/.test(labelNorm)) {
+    if (/\b(password|passwd|pwd|passcode|credential|credentials)\b/.test(labelNorm)) {
       return { type: "Password", reason: "Possible password", severity: HIGH, layer: "pattern", replacementKey: "password", trustedContext: true };
     }
     if (/\btoken\b/.test(labelNorm)) {
@@ -958,7 +958,7 @@
       const label = summaryLabel(finding);
       counts.set(label, (counts.get(label) || 0) + 1);
     });
-    return [...counts.entries()].slice(0, 2).map(([label, count]) => `${count} ${count === 1 ? label : `${label}s`}`).join(", ");
+    return [...counts.entries()].map(([label, count]) => `${count} ${count === 1 ? label : `${label}s`}`).join(", ");
   }
 
   function toPublicFindings(findings) {
@@ -1360,14 +1360,28 @@
       const hasUpper = /[A-Z]/.test(value);
       const hasLower = /[a-z]/.test(value);
       const hasDigit = /\d/.test(value);
-      const hasSpecial = /[!@#$%^&*+=?]/.test(value);
+      // Expanded special chars: includes _ - ~ which appear in many enterprise passwords
+      const hasSpecial = /[!@#$%^&*+=?_\-~]/.test(value);
       const classCount = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
 
+      // All 4 classes → always a password
       if (hasUpper && hasLower && hasDigit && hasSpecial) {
         return true;
       }
 
-      return value.length >= 12 && hasLower && hasDigit && hasSpecial && classCount >= 3;
+      // Year-suffix: Word+(19|20)YY[optional special] — catches summer2024, Admin2025!, welcome2023
+      // Very high-confidence pattern — year-terminated words almost never appear in normal prose
+      if (/^[A-Za-z]{3,}(?:19|20)\d{2}[!@#$%^&*+=?_\-~]?$/.test(value)) {
+        return true;
+      }
+
+      // Word + 3+ digit suffix — catches monkey123, dragon456, pass1234, login9999
+      if (/^[A-Za-z]{3,}\d{3,}$/.test(value)) {
+        return true;
+      }
+
+      // 3+ character classes at length >= 8 (lowered threshold)
+      return value.length >= 8 && classCount >= 3 && (hasDigit || hasSpecial);
     }
 
   function preview(finding) {
